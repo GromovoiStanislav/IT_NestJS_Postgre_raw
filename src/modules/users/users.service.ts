@@ -1,4 +1,3 @@
-import { UsersRepository } from "./users.repository";
 import { InputUserDto } from "./dto/input-user.dto";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { generateHash } from "../../utils/bcryptUtils";
@@ -138,7 +137,7 @@ export class GetUserByLoginOrEmailCommand {
 
 @CommandHandler(GetUserByLoginOrEmailCommand)
 export class GetUserByLoginOrEmailUseCase implements ICommandHandler<GetUserByLoginOrEmailCommand> {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: UsersPgPawRepository) {
   }
 
   async execute(command: GetUserByLoginOrEmailCommand) {
@@ -155,7 +154,7 @@ export class GetUserByIdCommand {
 
 @CommandHandler(GetUserByIdCommand)
 export class GetUserByIdUseCase implements ICommandHandler<GetUserByIdCommand> {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: UsersPgPawRepository) {
   }
 
   async execute(command: GetUserByIdCommand): Promise<User | null>  {
@@ -172,7 +171,7 @@ export class UpdateConfirmCodeCommand {
 
 @CommandHandler(UpdateConfirmCodeCommand)
 export class UpdateConfirmCodeUseCase implements ICommandHandler<UpdateConfirmCodeCommand> {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: UsersPgPawRepository) {
   }
 
   async execute(command: UpdateConfirmCodeCommand) {
@@ -188,7 +187,7 @@ export class GetUserByConfirmationCodeCommand {
 
 @CommandHandler(GetUserByConfirmationCodeCommand)
 export class GetUserByConfirmationCodeUseCase implements ICommandHandler<GetUserByConfirmationCodeCommand> {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: UsersPgPawRepository) {
   }
 
   async execute(command: GetUserByConfirmationCodeCommand) {
@@ -205,7 +204,7 @@ export class ConfirmUserCommand {
 
 @CommandHandler(ConfirmUserCommand)
 export class ConfirmUserUseCase implements ICommandHandler<ConfirmUserCommand> {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: UsersPgPawRepository) {
   }
 
   async execute(command: ConfirmUserCommand) {
@@ -250,7 +249,7 @@ export class GetIdBannedUsersCommand {
 
 @CommandHandler(GetIdBannedUsersCommand)
 export class GetIdBannedUsersUseCase implements ICommandHandler<GetIdBannedUsersCommand> {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: UsersPgPawRepository) {
   }
 
   async execute(command: GetIdBannedUsersCommand): Promise<string[]> {
