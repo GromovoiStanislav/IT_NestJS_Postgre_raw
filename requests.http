@@ -1,0 +1,36 @@
+###
+POST http://localhost:3000/users
+content-type: application/json
+Authorization: "Basic YWRtaW46cXdlcnR5"
+
+{
+  "name": "John",
+  "childrenCount": 0,
+  "email": "john@gmail.com"
+}
+
+###
+GET http://localhost:3000/users
+
+###
+GET http://localhost:3000/users?name=Ir
+
+###
+GET http://localhost:3000/users/2
+
+###
+DELETE http://localhost:3000/users/2
+
+###
+PUT http://localhost:3000/users/2
+content-type: application/json
+
+{
+  "name": "John",
+  "childrenCount": 2
+}
+
+
+###
+GET http://localhost:3000/posts/8
+Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxNjY5ODI5OTIxNjg0IiwiaWF0IjoxNjY5ODI5OTIyLCJleHAiOjE2Njk4MzAyMjJ9.GAs2ZfSOMiFNVbvmX8lK45qz54Ewu6T-q0mUUQlAX4w"
