@@ -3,6 +3,7 @@ import { SecurityRepository } from "./security.repository";
 import { ForbiddenException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { JWT_Service } from "../jwt/jwt.service";
 import { SecurityMapper } from "./dto/securityMapper";
+import { DevicesPgPawRepository } from "./devices-pg-paw-repository";
 
 
 //////////////////////////////////////////////////////////////
@@ -13,7 +14,7 @@ export class ClearAllDevicesCommand {
 
 @CommandHandler(ClearAllDevicesCommand)
 export class ClearAllDevicesUseCase implements ICommandHandler<ClearAllDevicesCommand> {
-  constructor(private securityRepository: SecurityRepository) {
+  constructor(private securityRepository: DevicesPgPawRepository) {
   }
 
   async execute(command: ClearAllDevicesCommand) {
@@ -31,7 +32,7 @@ export class ReturnAllDeviceSessionsByCurrentUserCommand {
 @CommandHandler(ReturnAllDeviceSessionsByCurrentUserCommand)
 export class ReturnAllDeviceSessionsByCurrentUserUseCase implements ICommandHandler<ReturnAllDeviceSessionsByCurrentUserCommand> {
   constructor(
-    private securityRepository: SecurityRepository,
+    private securityRepository: DevicesPgPawRepository,
     private jwtService: JWT_Service) {
   }
 
@@ -58,7 +59,7 @@ export class TerminateAllOtherDeviceSessionsExcludeCurrentCommand {
 @CommandHandler(TerminateAllOtherDeviceSessionsExcludeCurrentCommand)
 export class TerminateAllOtherDeviceSessionsExcludeCurrentUserUseCase implements ICommandHandler<TerminateAllOtherDeviceSessionsExcludeCurrentCommand> {
   constructor(
-    private securityRepository: SecurityRepository,
+    private securityRepository: DevicesPgPawRepository,
     private jwtService: JWT_Service) {
   }
 
@@ -84,7 +85,7 @@ export class TerminateDeviceSessionCommand {
 @CommandHandler(TerminateDeviceSessionCommand)
 export class TerminateDeviceSessionUseCase implements ICommandHandler<TerminateDeviceSessionCommand> {
   constructor(
-    private securityRepository: SecurityRepository,
+    private securityRepository: DevicesPgPawRepository,
     private jwtService: JWT_Service) {
   }
 
@@ -142,7 +143,7 @@ export class KillSessionByDeviceIdCommand {
 
 @CommandHandler(KillSessionByDeviceIdCommand)
 export class KillSessionByDeviceIdUseCase implements ICommandHandler<KillSessionByDeviceIdCommand> {
-  constructor(private securityRepository: SecurityRepository) {
+  constructor(private securityRepository: DevicesPgPawRepository) {
   }
 
   async execute(command: KillSessionByDeviceIdCommand) {
@@ -158,7 +159,7 @@ export class FindSessionByTokenIdCommand {
 
 @CommandHandler(FindSessionByTokenIdCommand)
 export class FindSessionByTokenIdUseCase implements ICommandHandler<FindSessionByTokenIdCommand> {
-  constructor(private securityRepository: SecurityRepository) {
+  constructor(private securityRepository: DevicesPgPawRepository) {
   }
 
   async execute(command: FindSessionByTokenIdCommand) {
@@ -174,7 +175,7 @@ export class KillSessionByTokenIdCommand {
 
 @CommandHandler(KillSessionByTokenIdCommand)
 export class KillSessionByTokenIdUseCase implements ICommandHandler<KillSessionByTokenIdCommand> {
-  constructor(private securityRepository: SecurityRepository) {
+  constructor(private securityRepository: DevicesPgPawRepository) {
   }
 
   async execute(command: KillSessionByTokenIdCommand) {
@@ -192,7 +193,7 @@ export class KillAllSessionsByUserIdCommand {
 
 @CommandHandler(KillAllSessionsByUserIdCommand)
 export class KillAllSessionsByUserIdUseCase implements ICommandHandler<KillAllSessionsByUserIdCommand> {
-  constructor(private securityRepository: SecurityRepository) {
+  constructor(private securityRepository: DevicesPgPawRepository) {
   }
 
   async execute(command: KillAllSessionsByUserIdCommand) {

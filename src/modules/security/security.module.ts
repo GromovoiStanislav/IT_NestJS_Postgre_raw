@@ -16,7 +16,8 @@ import {
 } from "./security.service";
 import { JWT_Module } from "../jwt/jwt.module";
 import { SecurityRepository } from "./security.repository";
-//import * as cookieParser from 'cookie-parser';
+import { DevicesPgPawRepository } from "./devices-pg-paw-repository";
+
 
 
 const useCases = [
@@ -37,15 +38,7 @@ const useCases = [
     MongooseModule.forFeature([{ name: Security.name, schema: SecuritySchema }])
   ],
   controllers: [SecurityController],
-  providers: [...useCases, SecurityRepository]
+  providers: [...useCases,DevicesPgPawRepository, SecurityRepository]
 })
 export class SecurityModule {
 }
-
-// export class SecurityModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(cookieParser)
-//       .forRoutes('security');
-//   }
-// }

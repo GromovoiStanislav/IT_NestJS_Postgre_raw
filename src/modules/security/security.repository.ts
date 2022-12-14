@@ -12,9 +12,19 @@ export class SecurityRepository {
     await this.securityModel.deleteMany({});
   }
 
+
   async findAllByUserId(userId: string): Promise<Security[]> {
     return this.securityModel.find({userId})
   }
+
+  async findByDeviceId(deviceId: string): Promise<Security | null> {
+    return this.securityModel.findOne({deviceId})
+  }
+
+  async findByTokenId(tokenId: string): Promise<Security | null> {
+    return this.securityModel.findOne({tokenId})
+  }
+
 
   async deleteAllByUserId(userId: string): Promise<void> {
     await this.securityModel.deleteMany({userId})
@@ -32,13 +42,6 @@ export class SecurityRepository {
     await this.securityModel.deleteMany({userId: userId, deviceId: {$ne: deviceId}})
   }
 
-  async findByDeviceId(deviceId: string): Promise<Security | null> {
-    return this.securityModel.findOne({deviceId})
-  }
-
-  async findByTokenId(tokenId: string): Promise<Security | null> {
-    return this.securityModel.findOne({tokenId})
-  }
 
   async addOrUpdateToken(data: Security): Promise<void> {
     await this.securityModel.findOneAndUpdate({deviceId: data.deviceId}, data, {upsert: true})
