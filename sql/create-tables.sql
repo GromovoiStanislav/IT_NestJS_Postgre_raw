@@ -1,33 +1,33 @@
-DROP TABLE IF EXISTS public."Users";
+DROP TABLE IF EXISTS public."users";
 
-CREATE TABLE public."Users"
+CREATE TABLE public."users"
 (
-    "Id" character varying,
-    "Login" character varying COLLATE "C",
-    "Password" character varying,
-    "Email" character varying COLLATE "C",
-    "CreatedAt" character varying,
-    "ConfirmationCode" character varying,
-    "IsEmailConfirmed" boolean,
+    "id" character varying,
+    "login" character varying COLLATE "C",
+    "password" character varying,
+    "email" character varying COLLATE "C",
+    "createdAt" character varying COLLATE "C",
+    "confirmationCode" character varying,
+    "isEmailConfirmed" boolean,
     "recoveryCode" character varying,
-    "IsRecoveryCodeConfirmed" boolean,
-    "IsBanned" boolean,
-    "BanDate" character varying,
-    "BanReason" character varying,
-    PRIMARY KEY ("Id")
+    "isRecoveryCodeConfirmed" boolean,
+    "isBanned" boolean,
+    "banDate" character varying,
+    "banReason" character varying,
+    PRIMARY KEY ("id")
 );
 
 
 
-DROP TABLE IF EXISTS public."Devices";
+DROP TABLE IF EXISTS public."devices";
 
-CREATE TABLE public.Devices
+CREATE TABLE public.devices
 (
-    "TokenId" character varying,
-    "DeviceId" character varying,
-    "UserId" character varying,
-    "IssuedAt" character varying,
-    "ExpiresIn" character varying,
-    "Ip" character varying,
-    "Title" character varying
+    "tokenId" character varying,
+    "deviceId" character varying,
+    "userId" character varying,
+    "issuedAt" character varying,
+    "expiresIn" character varying,
+    "ip" character varying,
+    "title" character varying
 );

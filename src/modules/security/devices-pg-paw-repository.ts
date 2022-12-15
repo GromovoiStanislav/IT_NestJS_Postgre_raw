@@ -12,60 +12,60 @@ export class DevicesPgPawRepository {
 
   async clearAll(): Promise<void> {
     await this.dataSource.query(`
-    DELETE FROM public."Devices";
+    DELETE FROM public."devices";
     `);
   }
 
   async findAllByUserId(userId: string): Promise<Security[]> {
     return this.dataSource.query(`
-    SELECT "TokenId", "DeviceId", "UserId", "IssuedAt", "ExpiresIn", "Ip", "Title"
-    FROM public."Devices";
-    WHERE "UserId" = $1;
+    SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
+    FROM public."devices";
+    WHERE "userId" = $1;
     `, [userId]);
   }
 
   async findByDeviceId(deviceId: string): Promise<Security | null> {
     return this.dataSource.query(`
-    SELECT "TokenId", "DeviceId", "UserId", "IssuedAt", "ExpiresIn", "Ip", "Title"
-    FROM public."Devices";
-    WHERE "DeviceId" = $1;
+    SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
+    FROM public."devices";
+    WHERE "deviceId" = $1;
     `, [deviceId]);
   }
 
   async findByTokenId(tokenId: string): Promise<Security | null> {
     return this.dataSource.query(`
-    SELECT "TokenId", "DeviceId", "UserId", "IssuedAt", "ExpiresIn", "Ip", "Title"
-    FROM public."Devices";
-    WHERE "TokenId" = $1;
+    SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
+    FROM public."devices";
+    WHERE "tokenId" = $1;
     `, [tokenId]);
   }
 
 
   async deleteByDeviceId(deviceId: string): Promise<void> {
     await this.dataSource.query(`
-    DELETE FROM public."Devices"
-    WHERE "DeviceId" = $1;
+    DELETE FROM public."devices"
+    WHERE "deviceId" = $1;
     `, [deviceId]);
   }
 
   async deleteByTokenId(tokenId: string): Promise<void> {
     await this.dataSource.query(`
-    DELETE FROM public."Devices"
-    WHERE "TokenId" = $1;
+    DELETE FROM public."devices"
+    WHERE "tokenId" = $1;
     `, [tokenId]);
   }
 
   async deleteAllByUserId(userId: string): Promise<void> {
     await this.dataSource.query(`
-    DELETE FROM public."Devices"
-    WHERE "UserId" = $1;
+    DELETE FROM public."devices"
+    WHERE "userId" = $1;
     `, [userId]);
   }
 
   async deleteAllOtherExcludeDeviceId(deviceId: string, userId: string): Promise<void> {
     await this.dataSource.query(`
-    DELETE FROM public."Devices"
-    WHERE "UserId" = $1 and "DeviceId" <> $2;
+    DELETE FROM public."devices"
+    WHERE "userId" = $1 and "deviceId" <> $2;
     `, [userId,deviceId]);
   }
 

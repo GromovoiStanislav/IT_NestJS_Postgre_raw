@@ -84,7 +84,9 @@ export class FindAllUsersUseCase implements ICommandHandler<FindAllUsersCommand>
   }
 
   async execute(command: FindAllUsersCommand) {
-    return await this.usersRepository.getAll();
+    const result = await this.usersRepository.getAllUsers(command.searchLogin, command.searchEmail, command.paginationParams);
+    //return UsersMapper.fromModelsToPaginator(result);
+    return result
   }
 }
 

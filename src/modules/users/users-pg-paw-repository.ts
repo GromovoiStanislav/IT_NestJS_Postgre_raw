@@ -4,6 +4,7 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { BanUsersInfo } from "./dto/user-banInfo.dto";
 import { User } from "./schemas/users.schema";
+import { PaginationParams } from "../../commonDto/paginationParams.dto";
 
 
 @Injectable()
@@ -16,56 +17,73 @@ export class UsersPgPawRepository {
 
   async clearAll(): Promise<void> {
     await this.dataSource.query(`
-    DELETE FROM public."Users";
+    DELETE FROM public."users";
     `);
   }
 
   async deleteUser(userId: string) {
     const result = await this.dataSource.query(`
-    DELETE FROM public."Users"
-    WHERE "Id" = $1;
+    DELETE FROM public."users"
+    WHERE "id" = $1;
     `, [userId]);
     return result[1];
   }
 
 
-  async getAll() {
-    return this.dataSource.query(`
-    SELECT "Login", "Password", "Email", "CreatedAt", "ConfirmationCode", "IsEmailConfirmed", "recoveryCode", "IsRecoveryCodeConfirmed", "IsBanned", "BanDate", "BanReason", "Id"
-    FROM public."Users";
+  async getAllUsers(searchLogin: string, searchEmail: string, {
+    pageNumber,
+    pageSize,
+    sortBy,
+    sortDirection
+  }: PaginationParams) {
+
+    if (!["login", "email", "createdAt"].includes(sortBy)) {
+      sortBy = "createdAt";
+    }
+    const order = sortDirection === "asc" ? "ASC" : "DESC";
+
+    const result = await this.dataSource.query(`
+    SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
+    FROM public."users"
+    WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}')
+    ORDER BY "${sortBy}" ${order}
+    LIMIT 10 OFFSET 0;
     `);
+
+
+    return result;
   }
 
 
   async findUserById(id: string): Promise<User | null> {
     return this.dataSource.query(`
-    SELECT "Login", "Password", "Email", "CreatedAt", "ConfirmationCode", "IsEmailConfirmed", "recoveryCode", "IsRecoveryCodeConfirmed", "IsBanned", "BanDate", "BanReason", "Id"
-    FROM public."Users"
-    WHERE "Id" = $1;
+    SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
+    FROM public."users"
+    WHERE "id" = $1;
     `, [id]);
   }
 
   async getBanedUsers(): Promise<User[]> {
     return this.dataSource.query(`
-    SELECT "Login", "Password", "Email", "CreatedAt", "ConfirmationCode", "IsEmailConfirmed", "recoveryCode", "IsRecoveryCodeConfirmed", "IsBanned", "BanDate", "BanReason", "Id"
-    FROM public."Users"
-    WHERE "IsBanned"=true;
+    SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
+    FROM public."users"
+    WHERE "isBanned"=true;
     `);
   }
 
   async findUserByLoginOrEmail(search): Promise<User> {
     return this.dataSource.query(`
-    SELECT "Login", "Password", "Email", "CreatedAt", "ConfirmationCode", "IsEmailConfirmed", "recoveryCode", "IsRecoveryCodeConfirmed", "IsBanned", "BanDate", "BanReason", "Id"
-    FROM public."Users"
-    WHERE "Login"=$1 or "Email"=$1;
+    SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
+    FROM public."users"
+    WHERE "login"=$1 or "email"=$1;
     `, [search]);
   }
 
   async findUserByConfirmationCode(confirmationCode: string): Promise<User | null> {
     return this.dataSource.query(`
-    SELECT "Login", "Password", "Email", "CreatedAt", "ConfirmationCode", "IsEmailConfirmed", "recoveryCode", "IsRecoveryCodeConfirmed", "IsBanned", "BanDate", "BanReason", "Id"
-    FROM public."Users"
-    WHERE "ConfirmationCode"=$1;
+    SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
+    FROM public."users"
+    WHERE "confirmationCode"=$1;
     `, [confirmationCode]);
   }
 
@@ -73,8 +91,8 @@ export class UsersPgPawRepository {
   async createUser(createUserDto: CreateUserDto) {
 
     const result = await this.dataSource.query(`
-    INSERT INTO public."Users"(
-    "Id", "Login", "Password", "Email", "CreatedAt", "ConfirmationCode", "IsEmailConfirmed", "recoveryCode", "IsRecoveryCodeConfirmed", "IsBanned", "BanDate", "BanReason")
+    INSERT INTO public."users"(
+    "id","login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason")
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
     `, [
       createUserDto.id,
@@ -95,16 +113,16 @@ export class UsersPgPawRepository {
 
   async banUser(userId: string, banInfo: BanUsersInfo): Promise<void> {
     await this.dataSource.query(`
-    UPDATE public."Users"
-    SET "IsBanned"=$2, "BanDate"=$3, "BanReason"=$4
-    WHERE "Id" = $1;
+    UPDATE public."users"
+    SET "isBanned"=$2, "banDate"=$3, "banReason"=$4
+    WHERE "id" = $1;
     `, [userId, banInfo.isBanned, banInfo.banDate, banInfo.banReason]);
   }
 
   async confirmUser(userId: string): Promise<void> {
     await this.dataSource.query(`
-    UPDATE public."Users"
-    SET "IsEmailConfirmed"=true
+    UPDATE public."users"
+    SET "isEmailConfirmed"=true
     WHERE "Id" = $1;
     `, [userId]);
 
@@ -112,9 +130,9 @@ export class UsersPgPawRepository {
 
   async updateConfirmCode(userId: string, confirmationCode: string): Promise<void> {
     await this.dataSource.query(`
-    UPDATE public."Users"
+    UPDATE public."users"
     SET "ConfirmationCode"=$2
-    WHERE "Id" = $1;
+    WHERE "id" = $1;
     `, [userId, confirmationCode]);
   }
 
