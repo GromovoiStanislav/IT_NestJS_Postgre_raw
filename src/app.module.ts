@@ -13,32 +13,13 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { CommentsModule } from "./modules/comments/comments.module";
 import { SecurityModule } from "./modules/security/security.module";
 import { ThrottlerModule } from "@nestjs/throttler";
-import { TypeOrmModule } from "@nestjs/typeorm";
+import { DatabasePostgresModule } from "./db/postgres.module";
 
 
 @Module({
   imports: [CqrsModule, configModule,
-
-
-    TypeOrmModule.forRoot({
-      type: "postgres",
-      host: "localhost",
-      port: 5432,
-      username: "myuser",
-      password: "123",
-      database: "It_blog",
-      autoLoadEntities: false,
-      synchronize: false,
-      poolSize: 5,
-      extra: {
-        connectionLimit: 5,
-        connectionTimeoutMillis: 1000,
-      }
-
-    }),
-
-
-    DatabaseMongoModule, UsersModule, TestingModule, BlogsModule, PostsModule, AuthModule, CommentsModule, SecurityModule,
+    DatabasePostgresModule, DatabaseMongoModule,
+    UsersModule, TestingModule, BlogsModule, PostsModule, AuthModule, CommentsModule, SecurityModule,
     ThrottlerModule.forRoot({
       ttl: 10,
       limit: 500
