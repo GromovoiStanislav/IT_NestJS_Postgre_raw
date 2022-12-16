@@ -41,7 +41,7 @@ export class DevicesPgPawRepository {
   async findByTokenId(tokenId: string): Promise<DeviceBdDto | null> {
     const result = await this.dataSource.query(`
     SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
-    FROM public."devices";
+    FROM public."devices"
     WHERE "tokenId" = $1;
     `, [tokenId]);
 
