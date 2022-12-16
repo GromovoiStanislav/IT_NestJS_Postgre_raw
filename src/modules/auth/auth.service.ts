@@ -79,7 +79,7 @@ export class ResendConfirmationCodeUseCase implements ICommandHandler<ResendConf
     if (!user) {
       throw new BadRequestException([{ field: "email", message: "email not exist" }]);
     }
-    if (user.emailConfirmation?.isConfirmed) {
+    if (user.isEmailConfirmed) {
       throw new BadRequestException([{ field: "email", message: "email already confirmed" }]);
     }
 
