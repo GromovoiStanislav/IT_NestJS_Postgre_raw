@@ -13,14 +13,14 @@ export class JWT_Service {
 
 
   async createAuthJWT(userId: string): Promise<string> {
-    return this.jwtService.signAsync({ userId }, { secret: this.settings.SECRET, expiresIn: "5m" });
+    return this.jwtService.signAsync({ userId }, { secret: this.settings.SECRET, expiresIn: "10s" });
   };
 
 
   async createRefreshJWT(tokenId: string, userId: string, deviceId: string, issuedAt: string): Promise<string> {
     return this.jwtService.signAsync(
       {tokenId, userId, deviceId, issuedAt },
-      { secret: this.settings.SECRET, expiresIn: "20m" }
+      { secret: this.settings.SECRET, expiresIn: "20s" }
     );
   };
 

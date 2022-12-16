@@ -22,7 +22,7 @@ import { DatabasePostgresModule } from "./db/postgres.module";
     UsersModule, TestingModule, BlogsModule, PostsModule, AuthModule, CommentsModule, SecurityModule,
     ThrottlerModule.forRoot({
       ttl: 10,
-      limit: 500
+      limit: 5
     })
   ],
   controllers: [AppController],
