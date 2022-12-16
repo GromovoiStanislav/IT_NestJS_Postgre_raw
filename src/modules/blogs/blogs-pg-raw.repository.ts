@@ -100,7 +100,7 @@ export class BlogsPgPawRepository {
     const result = await this.dataSource.query(`
     SELECT "id", "name", "websiteUrl", "description", "createdAt", "userId", "userLogin", "isBanned", "banDate"
     FROM public."blogs"
-    WHERE "id"=$1 and isBanned=false;
+    WHERE "id"=$1 and "isBanned"=false;
     `, [blogId]);
 
     if (result.length > 0) {
