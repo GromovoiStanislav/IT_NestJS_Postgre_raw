@@ -53,11 +53,7 @@ export class BlogsController {
 
   @Get(":id")
   async getOneBlog(@Param("id") blogId: string): Promise<ViewBlogDto> {
-    const result = await this.commandBus.execute(new GetOneBlogCommand(blogId));
-    if (!result) {
-      throw new NotFoundException();
-    }
-    return result;
+    return this.commandBus.execute(new GetOneBlogCommand(blogId));
   }
 
 

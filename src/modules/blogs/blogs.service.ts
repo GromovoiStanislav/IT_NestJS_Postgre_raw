@@ -136,10 +136,10 @@ export class GetOneBlogUseCase implements ICommandHandler<GetOneBlogCommand> {
 
   async execute(command: GetOneBlogCommand): Promise<ViewBlogDto | null> {
     const blog = await this.blogsRepository.getOneBlog(command.blogId);
-    if (blog) {
-      return BlogMapper.fromModelToView(blog, command.withBlogOwner);
+    if (!blog) {
+      throw new NotFoundException();
     }
-    return null;
+    return BlogMapper.fromModelToView(blog, command.withBlogOwner);
   }
 }
 
