@@ -1,4 +1,3 @@
-import { Blog } from "../schemas/blogs.schema";
 import { CreateBlogDto } from "./create-blog.dto";
 import { InputBlogDto } from "./input-blog.dto";
 import { ViewBlogDto } from "./view-blog.dto";
@@ -9,8 +8,8 @@ import dateAt from "../../../utils/DateGenerator";
 import { BlogOwnerDto } from "./blog-owner.dto";
 import { BanBlogInfo } from "./blog-banInfo.dto";
 import { ViewBanBlogUser } from "./view-blog-ban-user.dto";
-import { BlogBanUser } from "../schemas/blogBannedUsers.schema";
 import { BlogBdDto } from "./blog-bd.dto";
+import { BlogBannedUserBdDto } from "./blog-banned-users-bd.dto";
 
 export default class BlogMapper {
 
@@ -70,7 +69,7 @@ export default class BlogMapper {
   }
 
 
-  static fromBannedUserModelsToPaginator(blogs: PaginatorDto<BlogBanUser[]>): PaginatorDto<ViewBanBlogUser[]> {
+  static fromBannedUserModelsToPaginator(blogs: PaginatorDto<BlogBannedUserBdDto[]>): PaginatorDto<ViewBanBlogUser[]> {
     return {
       pagesCount: blogs.pagesCount,
       page: blogs.page,
