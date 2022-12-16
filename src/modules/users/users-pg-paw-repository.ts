@@ -42,16 +42,24 @@ export class UsersPgPawRepository {
     }
     const order = sortDirection === "asc" ? "ASC" : "DESC";
 
-    const result = await this.dataSource.query(`
+    const items = await this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
     FROM public."users"
     WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}')
-    ORDER BY "${sortBy}" ${order}
-    LIMIT 10 OFFSET 0;
+    ORDER BY "${sortBy}" COLLATE "C" ${order}
+    LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize};
     `);
 
+    const totalCount = await this.dataSource.query(`
+    SELECT COUNT(*)
+    FROM public."users"
+    WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}');
+    `);
 
-    return result;
+    const pagesCount = Math.ceil(totalCount / pageSize);
+    const page = pageNumber;
+
+    return { pagesCount, page, pageSize, totalCount, items };
   }
 
 
