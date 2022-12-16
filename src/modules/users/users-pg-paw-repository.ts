@@ -168,7 +168,7 @@ export class UsersPgPawRepository {
     await this.dataSource.query(`
     UPDATE public."users"
     SET "isEmailConfirmed"=true
-    WHERE "Id" = $1;
+    WHERE "id" = $1;
     `, [userId]);
 
   }
