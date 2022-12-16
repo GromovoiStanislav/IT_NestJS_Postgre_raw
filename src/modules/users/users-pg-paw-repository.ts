@@ -3,12 +3,14 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { BanUsersInfo } from "./dto/user-banInfo.dto";
-import { User } from "./schemas/users.schema";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
+import { UserBdDto } from "./dto/user-bd.dto";
+import { PaginatorDto } from "../../commonDto/paginator.dto";
 
 
 @Injectable()
 export class UsersPgPawRepository {
+
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource
   ) {
@@ -35,26 +37,40 @@ export class UsersPgPawRepository {
     pageSize,
     sortBy,
     sortDirection
-  }: PaginationParams) {
+  }: PaginationParams): Promise<PaginatorDto<UserBdDto[]>> {
 
     if (!["login", "email", "createdAt"].includes(sortBy)) {
       sortBy = "createdAt";
     }
     const order = sortDirection === "asc" ? "ASC" : "DESC";
 
+    let filter = "";
+    if (searchLogin && searchEmail) {
+      filter = `WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}')`;
+    } else if (searchLogin) {
+      filter = `WHERE "login" ~* '${searchLogin}'`;
+    } else if (searchEmail) {
+      filter = `WHERE "email" ~* '${searchEmail}'`;
+    }
+
     const items = await this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
     FROM public."users"
-    WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}')
+    ${filter}
     ORDER BY "${sortBy}" COLLATE "C" ${order}
     LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize};
     `);
 
-    const totalCount = await this.dataSource.query(`
+
+    let totalCount = 0;
+    const resultCount = await this.dataSource.query(`
     SELECT COUNT(*)
     FROM public."users"
     WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}');
     `);
+    if (resultCount.length > 0) {
+      totalCount = resultCount[0].count;
+    }
 
     const pagesCount = Math.ceil(totalCount / pageSize);
     const page = pageNumber;
@@ -63,15 +79,21 @@ export class UsersPgPawRepository {
   }
 
 
-  async findUserById(id: string): Promise<User | null> {
-    return this.dataSource.query(`
+  async findUserById(id: string): Promise<UserBdDto | null> {
+    const result = await this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
     FROM public."users"
     WHERE "id" = $1;
     `, [id]);
+
+    if (result.length > 0) {
+      return result[0];
+    }
+    return null
   }
 
-  async getBanedUsers(): Promise<User[]> {
+
+  async getBanedUsers(): Promise<UserBdDto[]> {
     return this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
     FROM public."users"
@@ -79,24 +101,36 @@ export class UsersPgPawRepository {
     `);
   }
 
-  async findUserByLoginOrEmail(search): Promise<User> {
-    return this.dataSource.query(`
+
+  async findUserByLoginOrEmail(search): Promise<UserBdDto> {
+    const result = await this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
     FROM public."users"
     WHERE "login"=$1 or "email"=$1;
     `, [search]);
+
+    if (result.length > 0) {
+      return result[0];
+    }
+    return null
   }
 
-  async findUserByConfirmationCode(confirmationCode: string): Promise<User | null> {
-    return this.dataSource.query(`
+
+  async findUserByConfirmationCode(confirmationCode: string): Promise<UserBdDto | null> {
+    const result = await this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
     FROM public."users"
     WHERE "confirmationCode"=$1;
     `, [confirmationCode]);
+
+    if (result.length > 0) {
+      return result[0];
+    }
+    return null
   }
 
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto): Promise<UserBdDto> {
 
     const result = await this.dataSource.query(`
     INSERT INTO public."users"(
@@ -108,16 +142,17 @@ export class UsersPgPawRepository {
       createUserDto.password,
       createUserDto.email,
       createUserDto.createdAt,
-      createUserDto.emailConfirmation.confirmationCode,
-      createUserDto.emailConfirmation.isConfirmed,
-      createUserDto.recoveryPassword.recoveryCode,
-      createUserDto.recoveryPassword.isConfirmed,
-      createUserDto.banInfo.isBanned,
-      createUserDto.banInfo.banDate,
-      createUserDto.banInfo.banReason
+      createUserDto.confirmationCode,
+      createUserDto.isEmailConfirmed,
+      createUserDto.recoveryCode,
+      createUserDto.isRecoveryCodeConfirmed,
+      createUserDto.isBanned,
+      createUserDto.banDate,
+      createUserDto.banReason
     ]);
     return createUserDto;
   }
+
 
   async banUser(userId: string, banInfo: BanUsersInfo): Promise<void> {
     await this.dataSource.query(`
@@ -126,6 +161,7 @@ export class UsersPgPawRepository {
     WHERE "id" = $1;
     `, [userId, banInfo.isBanned, banInfo.banDate, banInfo.banReason]);
   }
+
 
   async confirmUser(userId: string): Promise<void> {
     await this.dataSource.query(`
@@ -136,6 +172,7 @@ export class UsersPgPawRepository {
 
   }
 
+
   async updateConfirmCode(userId: string, confirmationCode: string): Promise<void> {
     await this.dataSource.query(`
     UPDATE public."users"
@@ -143,6 +180,5 @@ export class UsersPgPawRepository {
     WHERE "id" = $1;
     `, [userId, confirmationCode]);
   }
-
 
 }

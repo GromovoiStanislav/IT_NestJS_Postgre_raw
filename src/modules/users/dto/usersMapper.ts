@@ -3,9 +3,9 @@ import { InputUserDto } from "./input-user.dto";
 import uid from "../../../utils/IdGenerator";
 import dateAt from "../../../utils/DateGenerator";
 import { ViewUserDto } from "./view-user.dto";
-import { User } from "../schemas/users.schema";
 import { PaginatorDto } from "../../../commonDto/paginator.dto";
 import { BanUsersInfo } from "./user-banInfo.dto";
+import { UserBdDto } from "./user-bd.dto";
 
 
 export default class UsersMapper {
@@ -17,25 +17,26 @@ export default class UsersMapper {
     user.password = inputUser.password;
     user.email = inputUser.email;
     user.createdAt = dateAt();
-    user.emailConfirmation = {
-      confirmationCode: confirmationCode,
-      isConfirmed: false
-    };
-    user.recoveryPassword = {
-      recoveryCode: "",
-      isConfirmed: false
-    };
-    user.banInfo = new BanUsersInfo();
+
+    user.confirmationCode =  confirmationCode;
+    user.isEmailConfirmed =  false;
+
+    user.recoveryCode = "";
+    user.isRecoveryCodeConfirmed = false;
+
+    user.isBanned = false;
+    user.banDate = null;
+    user.banReason = null;
+
     return user;
   }
 
-  static fromModelToView(user: User): ViewUserDto {
+  static fromModelToView(user: UserBdDto): ViewUserDto {
 
     const banInfo = new BanUsersInfo();
-    banInfo.isBanned = user.banInfo.isBanned;
-    banInfo.banDate = user.banInfo.banDate;
-    banInfo.banReason = user.banInfo.banReason;
-
+    banInfo.isBanned = user.isBanned;
+    banInfo.banDate = user.banDate;
+    banInfo.banReason = user.banReason;
 
     const viewUser = new ViewUserDto();
     viewUser.id = user.id;
@@ -46,7 +47,7 @@ export default class UsersMapper {
     return viewUser;
   }
 
-  static fromModelsToPaginator(users: PaginatorDto<User[]>): PaginatorDto<ViewUserDto[]> {
+  static fromModelsToPaginator(users: PaginatorDto<UserBdDto[]>): PaginatorDto<ViewUserDto[]> {
     return {
       pagesCount: users.pagesCount,
       page: users.page,
