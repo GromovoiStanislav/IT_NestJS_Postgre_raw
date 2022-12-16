@@ -177,7 +177,7 @@ export class UsersPgPawRepository {
   async updateConfirmCode(userId: string, confirmationCode: string): Promise<void> {
     await this.dataSource.query(`
     UPDATE public."users"
-    SET "ConfirmationCode"=$2
+    SET "сonfirmationCode"=$2
     WHERE "id" = $1;
     `, [userId, confirmationCode]);
   }
