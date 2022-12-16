@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { SecurityRepository } from "./security.repository";
 import { ForbiddenException, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { JWT_Service } from "../jwt/jwt.service";
 import { SecurityMapper } from "./dto/securityMapper";
@@ -117,7 +116,7 @@ export class AddOrUpdateDeviceSessionCommand {
 
 @CommandHandler(AddOrUpdateDeviceSessionCommand)
 export class AddOrUpdateDeviceSessionUseCase implements ICommandHandler<AddOrUpdateDeviceSessionCommand> {
-  constructor(private securityRepository: SecurityRepository) {
+  constructor(private securityRepository: DevicesPgPawRepository) {
   }
 
   async execute(command: AddOrUpdateDeviceSessionCommand) {

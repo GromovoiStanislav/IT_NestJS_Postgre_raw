@@ -1,7 +1,6 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-//import * as cookieParser from 'cookie-parser';
+
 
 import {
   ConfirmEmailUseCase, GetMeInfoUseCase,
@@ -35,11 +34,3 @@ const useCases = [
 })
 export class AuthModule {
 }
-
-// export class AuthModule implements NestModule {
-//   configure(consumer: MiddlewareConsumer) {
-//     consumer
-//       .apply(cookieParser)
-//       .forRoutes('auth');
-//   }
-// }

@@ -1,7 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
-import { Security } from "./schemas/security.schema";
+import { DeviceBdDto } from "./dto/devices-bd.dto";
+
 
 @Injectable()
 export class DevicesPgPawRepository {
@@ -16,7 +17,7 @@ export class DevicesPgPawRepository {
     `);
   }
 
-  async findAllByUserId(userId: string): Promise<Security[]> {
+  async findAllByUserId(userId: string): Promise<DeviceBdDto[]> {
     return this.dataSource.query(`
     SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
     FROM public."devices";
@@ -24,20 +25,30 @@ export class DevicesPgPawRepository {
     `, [userId]);
   }
 
-  async findByDeviceId(deviceId: string): Promise<Security | null> {
-    return this.dataSource.query(`
+  async findByDeviceId(deviceId: string): Promise<DeviceBdDto | null> {
+    const result = await this.dataSource.query(`
     SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
     FROM public."devices";
     WHERE "deviceId" = $1;
     `, [deviceId]);
+
+    if (result.length > 0) {
+      return result[0];
+    }
+    return null;
   }
 
-  async findByTokenId(tokenId: string): Promise<Security | null> {
-    return this.dataSource.query(`
+  async findByTokenId(tokenId: string): Promise<DeviceBdDto | null> {
+    const result = await this.dataSource.query(`
     SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
     FROM public."devices";
     WHERE "tokenId" = $1;
     `, [tokenId]);
+
+    if (result.length > 0) {
+      return result[0];
+    }
+    return null;
   }
 
 
@@ -66,7 +77,23 @@ export class DevicesPgPawRepository {
     await this.dataSource.query(`
     DELETE FROM public."devices"
     WHERE "userId" = $1 and "deviceId" <> $2;
-    `, [userId,deviceId]);
+    `, [userId, deviceId]);
   }
+
+
+  async addOrUpdateToken(data: DeviceBdDto): Promise<void> {
+    await this.deleteByDeviceId(data.deviceId);
+    await this.createByDeviceId(data);
+  }
+
+  async createByDeviceId(data: DeviceBdDto): Promise<void> {
+    await this.dataSource.query(`
+    INSERT INTO public.devices(
+    "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", ip, title)
+    VALUES (data.tokenId, data.deviceId, data.userId, data.issuedAt, data.expiresIn, data.ip,data.title);
+    `);
+  }
+
+
 
 }

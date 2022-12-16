@@ -19,7 +19,7 @@ import {
   FindSessionByTokenIdCommand,
   KillSessionByDeviceIdCommand, KillSessionByTokenIdCommand
 } from "../security/security.service";
-import uid from "../../utils/IdGenerator";
+
 
 
 ////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ export class LoginUserUseCase implements ICommandHandler<LoginUserCommand> {
     const user = await this.commandBus.execute(new GetUserByLoginOrEmailCommand(command.loginOrEmail));
     if (user) {
       const compareOK = await comparePassword(command.password, user.password);
-      if (compareOK && !user.banInfo.isBanned) {
+      if (compareOK && !user.isBanned) {
         const deviceId = uuidv4(); // т.е. это Сессия
         const tokenId = uuidv4();
         const issuedAt = Date.now();
