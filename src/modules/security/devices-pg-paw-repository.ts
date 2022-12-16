@@ -20,7 +20,7 @@ export class DevicesPgPawRepository {
   async findAllByUserId(userId: string): Promise<DeviceBdDto[]> {
     return this.dataSource.query(`
     SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
-    FROM public."devices";
+    FROM public."devices"
     WHERE "userId" = $1;
     `, [userId]);
   }
@@ -28,7 +28,7 @@ export class DevicesPgPawRepository {
   async findByDeviceId(deviceId: string): Promise<DeviceBdDto | null> {
     const result = await this.dataSource.query(`
     SELECT "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", "ip", "title"
-    FROM public."devices";
+    FROM public."devices"
     WHERE "deviceId" = $1;
     `, [deviceId]);
 
