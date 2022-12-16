@@ -247,7 +247,7 @@ export class BlogsPgPawRepository {
     SELECT COUNT(*)
     FROM public."blogBannedUsers"
     ${filter};
-    `);
+    `,[blogId]);
     if (resultCount.length > 0) {
       totalCount = +resultCount[0].count;
     }
