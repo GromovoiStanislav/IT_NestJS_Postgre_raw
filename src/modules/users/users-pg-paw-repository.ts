@@ -69,8 +69,9 @@ export class UsersPgPawRepository {
     WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}');
     `);
     if (resultCount.length > 0) {
-      totalCount = resultCount[0].count;
+      totalCount = +resultCount[0].count;
     }
+
 
     const pagesCount = Math.ceil(totalCount / pageSize);
     const page = pageNumber;
