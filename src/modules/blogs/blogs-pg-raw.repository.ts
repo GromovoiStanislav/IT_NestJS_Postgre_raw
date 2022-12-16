@@ -228,9 +228,9 @@ export class BlogsPgPawRepository {
     }
     const order = sortDirection === "asc" ? "ASC" : "DESC";
 
-    let filter = "";
+    let filter = `WHERE "blogId" = $1`;
     if (searchLogin) {
-      filter = `WHERE "blogId" = $1  and "login" ~* '${searchLogin}'`;
+      filter = filter + ` and "login" ~* '${searchLogin}'`;
     }
 
     const items = await this.dataSource.query(`
