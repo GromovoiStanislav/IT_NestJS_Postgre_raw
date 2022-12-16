@@ -10,6 +10,7 @@ import { BlogOwnerDto } from "./blog-owner.dto";
 import { BanBlogInfo } from "./blog-banInfo.dto";
 import { ViewBanBlogUser } from "./view-blog-ban-user.dto";
 import { BlogBanUser } from "../schemas/blogBannedUsers.schema";
+import { BlogBdDto } from "./blog-bd.dto";
 
 export default class BlogMapper {
 
@@ -20,8 +21,10 @@ export default class BlogMapper {
     createdBlog.websiteUrl = inputBlog.websiteUrl;
     createdBlog.description = inputBlog.description;
     createdBlog.createdAt = dateAt();
-    createdBlog.banInfo = new BanBlogInfo();
-    createdBlog.blogOwnerInfo = blogOwnerInfo;
+    createdBlog.isBanned= false;
+    createdBlog.banDate= null;
+    createdBlog.userId = blogOwnerInfo.userId
+    createdBlog.userLogin = blogOwnerInfo.userLogin
     return createdBlog;
   }
 
@@ -33,7 +36,16 @@ export default class BlogMapper {
     return updatedBlog;
   }
 
-  static fromModelToView(blog: Blog, sa: boolean = false): ViewBlogDto {
+  static fromModelToView(blog: BlogBdDto, sa: boolean = false): ViewBlogDto {
+
+    const banInfo = new BanBlogInfo()
+    banInfo.isBanned = blog.isBanned
+    banInfo.banDate = blog.banDate
+
+    const blogOwnerInfo = new BlogOwnerDto()
+    blogOwnerInfo.userId = blog.userId
+    blogOwnerInfo.userLogin = blog.userLogin
+
     const viewBlog = new ViewBlogDto();
     viewBlog.id = blog.id;
     viewBlog.name = blog.name;
@@ -41,13 +53,13 @@ export default class BlogMapper {
     viewBlog.description = blog.description;
     viewBlog.createdAt = blog.createdAt;
     if (sa) {
-      viewBlog.blogOwnerInfo = blog.blogOwnerInfo as BlogOwnerDto;
-      viewBlog.banInfo = blog.banInfo as BanBlogInfo;
+      viewBlog.blogOwnerInfo = blogOwnerInfo;
+      viewBlog.banInfo = banInfo;
     }
     return viewBlog;
   }
 
-  static fromModelsToPaginator(blogs: PaginatorDto<Blog[]>, withBlogOwner: boolean): PaginatorDto<ViewBlogDto[]> {
+  static fromModelsToPaginator(blogs: PaginatorDto<BlogBdDto[]>, withBlogOwner: boolean): PaginatorDto<ViewBlogDto[]> {
     return {
       pagesCount: blogs.pagesCount,
       page: blogs.page,

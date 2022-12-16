@@ -14,13 +14,10 @@ import {
   ReturnAllBannedUsersForBlogUseCase,
   UpdateBlogUseCase
 } from "./blogs.service";
-import { MongooseModule } from "@nestjs/mongoose";
-import { Blog, BlogSchema } from "./schemas/blogs.schema";
-import { BlogsRepository } from "./blogs.repository";
 import { CqrsModule } from "@nestjs/cqrs";
 import { JWT_Module } from "../jwt/jwt.module";
 import { UserIdMiddleware } from "../../middlewares/userId.middleware";
-import { BlogBannedUsersSchema, BlogBanUser } from "./schemas/blogBannedUsers.schema";
+import { BlogsPgPawRepository } from "./blogs-pg-raw.repository";
 
 
 const useCases = [
@@ -41,12 +38,9 @@ const useCases = [
 ];
 
 @Module({
-  imports: [MongooseModule.forFeature([
-    { name: Blog.name, schema: BlogSchema },
-    { name: BlogBanUser.name, schema: BlogBannedUsersSchema },
-  ]), CqrsModule, JWT_Module],
+  imports: [CqrsModule, JWT_Module],
   controllers: [BlogsController, BloggerBlogsController, SaBlogsController],
-  providers: [...useCases, BlogsRepository],
+  providers: [...useCases, BlogsPgPawRepository],
   exports: []
 })
 export class BlogsModule implements NestModule {

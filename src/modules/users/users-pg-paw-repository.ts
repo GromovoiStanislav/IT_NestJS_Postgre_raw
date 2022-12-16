@@ -23,7 +23,7 @@ export class UsersPgPawRepository {
     `);
   }
 
-  async deleteUser(userId: string) {
+  async deleteUser(userId: string):Promise<number> {
     const result = await this.dataSource.query(`
     DELETE FROM public."users"
     WHERE "id" = $1;
@@ -66,7 +66,7 @@ export class UsersPgPawRepository {
     const resultCount = await this.dataSource.query(`
     SELECT COUNT(*)
     FROM public."users"
-    WHERE ("login" ~* '${searchLogin}' or "email" ~* '${searchEmail}');
+    ${filter};
     `);
     if (resultCount.length > 0) {
       totalCount = +resultCount[0].count;
@@ -132,7 +132,6 @@ export class UsersPgPawRepository {
 
 
   async createUser(createUserDto: CreateUserDto): Promise<UserBdDto> {
-
     const result = await this.dataSource.query(`
     INSERT INTO public."users"(
     "id","login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason")
@@ -181,5 +180,7 @@ export class UsersPgPawRepository {
     WHERE "id" = $1;
     `, [userId, confirmationCode]);
   }
+
+
 
 }

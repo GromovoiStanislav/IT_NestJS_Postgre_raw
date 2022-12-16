@@ -1,5 +1,3 @@
-import { BlogOwnerDto } from "./blog-owner.dto";
-import { BanBlogInfo } from "./blog-banInfo.dto";
 
 export class CreateBlogDto {
   id: string;
@@ -7,6 +5,8 @@ export class CreateBlogDto {
   websiteUrl: string;
   description: string;
   createdAt: string;
-  blogOwnerInfo: BlogOwnerDto;
-  banInfo: BanBlogInfo;
+  userId: string
+  userLogin: string
+  isBanned: boolean = false;
+  banDate: string = null;
 }

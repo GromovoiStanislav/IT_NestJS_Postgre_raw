@@ -1,4 +1,3 @@
-import { BlogsRepository } from "./blogs.repository";
 import { ViewBlogDto } from "./dto/view-blog.dto";
 import { InputBlogDto } from "./dto/input-blog.dto";
 import BlogMapper from "./dto/blogsMapper";
@@ -15,6 +14,7 @@ import { InputBanBlogUserDto } from "../users/dto/input-blog-ban-user.dto";
 import { CreateBlogBanUserDto } from "./dto/create-blog-ban-user.dto";
 import { GetAllPostsByArrayOfBlogIdCommand } from "../posts/posts.service";
 import { GetAllCommentsByArrayOfPostIDCommand } from "../comments/comments.service";
+import { BlogsPgPawRepository } from "./blogs-pg-raw.repository";
 
 
 //////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@ export class ClearAllBlogsCommand {
 
 @CommandHandler(ClearAllBlogsCommand)
 export class ClearAllBlogsUseCase implements ICommandHandler<ClearAllBlogsCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {
+  constructor(protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: ClearAllBlogsCommand) {
@@ -43,7 +43,7 @@ export class CreateBlogCommand {
 export class CreateBlogUseCase implements ICommandHandler<CreateBlogCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected blogsRepository: BlogsRepository) {
+    protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: CreateBlogCommand): Promise<ViewBlogDto> {
@@ -73,7 +73,7 @@ export class UpdateBlogCommand {
 export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected blogsRepository: BlogsRepository) {
+    protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: UpdateBlogCommand): Promise<void> {
@@ -88,7 +88,7 @@ export class UpdateBlogUseCase implements ICommandHandler<UpdateBlogCommand> {
       throw new NotFoundException();
     }
 
-    if (command.userId !== blog.blogOwnerInfo.userId) {
+    if (command.userId !== blog.userId) {
       throw new ForbiddenException();
     }
     await this.blogsRepository.updateBlog(command.blogId, BlogMapper.fromInputToUpdate(command.inputBlog));
@@ -104,7 +104,7 @@ export class DeleteBlogCommand {
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
   constructor(
-    protected blogsRepository: BlogsRepository) {
+    protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: DeleteBlogCommand): Promise<void> {
@@ -114,7 +114,7 @@ export class DeleteBlogUseCase implements ICommandHandler<DeleteBlogCommand> {
       throw new NotFoundException();
     }
 
-    if (command.userId !== blog.blogOwnerInfo.userId) {
+    if (command.userId !== blog.userId) {
       throw new ForbiddenException();
     }
 
@@ -131,7 +131,7 @@ export class GetOneBlogCommand {
 
 @CommandHandler(GetOneBlogCommand)
 export class GetOneBlogUseCase implements ICommandHandler<GetOneBlogCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {
+  constructor(protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: GetOneBlogCommand): Promise<ViewBlogDto | null> {
@@ -152,7 +152,7 @@ export class GetAllBlogsCommand {
 
 @CommandHandler(GetAllBlogsCommand)
 export class GetAllBlogsUseCase implements ICommandHandler<GetAllBlogsCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {
+  constructor(protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: GetAllBlogsCommand): Promise<PaginatorDto<ViewBlogDto[]>> {
@@ -177,7 +177,7 @@ export class BindBlogWithUserCommand {
 export class BindBlogWithUserUseCase implements ICommandHandler<BindBlogWithUserCommand> {
   constructor(
     private commandBus: CommandBus,
-    private blogsRepository: BlogsRepository) {
+    private blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: BindBlogWithUserCommand): Promise<void> {
@@ -185,7 +185,7 @@ export class BindBlogWithUserUseCase implements ICommandHandler<BindBlogWithUser
     if (!blog) {
       throw new BadRequestException("blog not found");
     }
-    if (blog.blogOwnerInfo.userId) {
+    if (blog.userId) {
       throw new BadRequestException("blogId has user already");
     }
 
@@ -212,7 +212,7 @@ export class GetAllBlogsByUserIdCommand {
 
 @CommandHandler(GetAllBlogsByUserIdCommand)
 export class GetAllBlogsByUserIdUseCase implements ICommandHandler<GetAllBlogsByUserIdCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {
+  constructor(protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: GetAllBlogsByUserIdCommand): Promise<PaginatorDto<ViewBlogDto[]>> {
@@ -230,7 +230,7 @@ export class BanBlogCommand {
 
 @CommandHandler(BanBlogCommand)
 export class BanBlogUseCase implements ICommandHandler<BanBlogCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {
+  constructor(protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: BanBlogCommand): Promise<void> {
@@ -253,7 +253,7 @@ export class GetIdBannedBlogsCommand {
 
 @CommandHandler(GetIdBannedBlogsCommand)
 export class GetIdBannedBlogsUseCase implements ICommandHandler<GetIdBannedBlogsCommand> {
-  constructor(protected blogsRepository: BlogsRepository) {
+  constructor(protected blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: GetIdBannedBlogsCommand): Promise<string[]> {
@@ -272,7 +272,7 @@ export class BanUserForBlogCommand {
 @CommandHandler(BanUserForBlogCommand)
 export class BanUserForBlogUseCase implements ICommandHandler<BanUserForBlogCommand> {
   constructor(private commandBus: CommandBus,
-              private blogsRepository: BlogsRepository) {
+              private blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: BanUserForBlogCommand): Promise<void> {
@@ -289,7 +289,7 @@ export class BanUserForBlogUseCase implements ICommandHandler<BanUserForBlogComm
         throw new NotFoundException("blog not found");
       }
 
-      if (blog.blogOwnerInfo.userId !== command.ownerId) {
+      if (blog.userId !== command.ownerId) {
         throw new ForbiddenException();
       }
 
@@ -316,7 +316,7 @@ export class ReturnAllBannedUsersForBlogCommand {
 
 @CommandHandler(ReturnAllBannedUsersForBlogCommand)
 export class ReturnAllBannedUsersForBlogUseCase implements ICommandHandler<ReturnAllBannedUsersForBlogCommand> {
-  constructor(private blogsRepository: BlogsRepository) {
+  constructor(private blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: ReturnAllBannedUsersForBlogCommand) {
@@ -324,7 +324,7 @@ export class ReturnAllBannedUsersForBlogUseCase implements ICommandHandler<Retur
     if (!blog) {
       throw new NotFoundException("blog not found");
     }
-    if (blog.blogOwnerInfo.userId !== command.ownerId) {
+    if (blog.userId !== command.ownerId) {
       throw new ForbiddenException();
     }
 
@@ -341,7 +341,7 @@ export class IsUserBannedForBlogCommand {
 
 @CommandHandler(IsUserBannedForBlogCommand)
 export class IsUserBannedForBlogUseCase implements ICommandHandler<IsUserBannedForBlogCommand> {
-  constructor(private blogsRepository: BlogsRepository) {
+  constructor(private blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: IsUserBannedForBlogCommand): Promise<boolean> {
@@ -359,7 +359,7 @@ export class GetAllCommentsForMyBlogsCommand {
 @CommandHandler(GetAllCommentsForMyBlogsCommand)
 export class GetAllCommentsForMyBlogsUseCase implements ICommandHandler<GetAllCommentsForMyBlogsCommand> {
   constructor(private commandBus: CommandBus,
-              private blogsRepository: BlogsRepository) {
+              private blogsRepository: BlogsPgPawRepository) {
   }
 
   async execute(command: GetAllCommentsForMyBlogsCommand) {
