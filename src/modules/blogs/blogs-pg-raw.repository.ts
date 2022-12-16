@@ -49,13 +49,11 @@ export class BlogsPgPawRepository {
     const order = sortDirection === "asc" ? "ASC" : "DESC";
 
     let filter = `WHERE 1=1`;
-    const filterArr = []
     if (!includeBanned) {
-      filter = filter + `and "isBanned" = false`;
+      filter = filter + ` and "isBanned" = false`;
     }
     if (userId) {
-      filter = filter + `and "userId" = $1`;
-      filterArr.push(userId)
+      filter = filter + ` and "userId" = '${userId}'`;
     }
     if (searchName) {
       filter = filter + ` and "name" ~* '${searchName}'`;
@@ -67,7 +65,7 @@ export class BlogsPgPawRepository {
     ${filter}
     ORDER BY "${sortBy}" COLLATE "C" ${order}
     LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize};
-    `,[filterArr]);
+    `);
 
 
     let totalCount = 0;
@@ -75,7 +73,7 @@ export class BlogsPgPawRepository {
     SELECT COUNT(*)
     FROM public."blogs"
     ${filter};
-    `,[filterArr]);
+    `);
     if (resultCount.length > 0) {
       totalCount = +resultCount[0].count;
     }
