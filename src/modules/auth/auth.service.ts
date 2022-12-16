@@ -111,7 +111,7 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand>
     if (!user) {
       throw new BadRequestException([{ field: "code", message: "code not exist" }]);
     }
-    if (user.emailConfirmation?.isConfirmed) {
+    if (user.isEmailConfirmed) {
       throw new BadRequestException([{ field: "code", message: "code already confirmed" }]);
     }
 

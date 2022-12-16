@@ -15,7 +15,7 @@ import {
   BanUserCommand,
   CreateUserCommand,
   DeleteUserCommand,
-  FindAllUsersCommand
+  FindAllUsersCommand, GetUserByConfirmationCodeCommand
 } from "./users.service";
 import { BaseAuthGuard } from "../../guards/base.auth.guard";
 import { Pagination } from "../../decorators/paginationDecorator";
@@ -60,6 +60,12 @@ export class SaUsersController {
   async banUser(@Param("id") userId: string, @Body() inputBanUser: InputBanUserDto) {
     await this.commandBus.execute(new BanUserCommand(userId, inputBanUser));
   }
+
+  @Get("confirmationCode/:cod")
+  async getUsersByConfirmationCode(@Param("cod") confirmationCode: string) {
+    return this.commandBus.execute(new GetUserByConfirmationCodeCommand(confirmationCode));
+  }
+
 
 }
 
