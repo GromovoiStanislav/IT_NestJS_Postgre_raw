@@ -90,8 +90,16 @@ export class DevicesPgPawRepository {
     await this.dataSource.query(`
     INSERT INTO public.devices(
     "tokenId", "deviceId", "userId", "issuedAt", "expiresIn", ip, title)
-    VALUES (data.tokenId, data.deviceId, data.userId, data.issuedAt, data.expiresIn, data.ip,data.title);
-    `);
+    VALUES ($1, $2, $3, $4, $5, $6, $7);
+    `,[
+      data.tokenId,
+      data.deviceId,
+      data.userId,
+      data.issuedAt,
+      data.expiresIn,
+      data.ip,
+      data.title
+    ]);
   }
 
 
