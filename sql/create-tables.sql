@@ -39,12 +39,12 @@ DROP TABLE IF EXISTS public."blogs";
 CREATE TABLE public.blogs
 (
     id character varying NOT NULL,
-    name character varying,
-    "websiteUrl" character varying,
-    description character varying,
-    "createdAt" character varying,
+    name character varying COLLATE "C",
+    "websiteUrl" character varying COLLATE "C",
+    description character varying COLLATE "C",
+    "createdAt" character varying COLLATE "C",
     "userId" character varying,
-    "userLogin" character varying,
+    "userLogin" character varying COLLATE "C",
     "isBanned" boolean,
     "banDate" character varying,
     PRIMARY KEY (id)
@@ -60,4 +60,56 @@ CREATE TABLE public."blogBannedUsers"
     login character varying,
     "createdAt" character varying,
     "banReason" character varying
+);
+
+
+DROP TABLE IF EXISTS public."posts";
+
+CREATE TABLE public.posts
+(
+    id character varying NOT NULL,
+    title character varying COLLATE "C",
+    content character varying COLLATE "C",
+    "shortDescription" character varying COLLATE "C",
+    "blogId" character varying,
+    "blogName" character varying,
+    "createdAt" character varying COLLATE "C",
+    PRIMARY KEY (id)
+);
+
+
+DROP TABLE IF EXISTS public."postLikes";
+
+CREATE TABLE public."postLikes"
+(
+    "postId" character varying,
+    "userId" character varying,
+    "userLogin" character varying,
+    "likeStatus" character varying,
+    "addedAt" character varying COLLATE "C"
+);
+
+
+
+DROP TABLE IF EXISTS public."comments";
+
+CREATE TABLE public.comments
+(
+    id character varying NOT NULL,
+    "postId" character varying,
+    content character varying COLLATE "C",
+    "userId" character varying,
+    "userLogin" character varying COLLATE "C",
+    "createdAt" character varying COLLATE "C",
+    PRIMARY KEY (id)
+);
+
+
+DROP TABLE IF EXISTS public."commentLikes";
+
+CREATE TABLE public."commentLikes"
+(
+    "commentId" character varying,
+    "userId" character varying,
+    "likeStatus" character varying
 );
