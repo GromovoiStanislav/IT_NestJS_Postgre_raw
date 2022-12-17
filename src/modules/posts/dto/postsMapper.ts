@@ -4,10 +4,10 @@ import { CreatePostDto } from "./create-post.dto";
 import dateAt from "../../../utils/DateGenerator";
 import { InputPostDto } from "./input-post.dto";
 import { ViewPostDto } from "./view-post.dto";
-import { Post } from "../schemas/posts.schema";
 import { ExtendedLikesInfoDto } from "../../../commonDto/extendedLikesInfoDto";
 import { UpdatePostDto } from "./update-post.dto";
 import { InputBlogPostDto } from "./input-blog-post.dto";
+import { PostDbDto } from "./posts-db.dto";
 
 
 export default class PostMapper {
@@ -46,7 +46,7 @@ export default class PostMapper {
   }
 
 
-  static fromModelToView(post: Post, likes: ExtendedLikesInfoDto): ViewPostDto {
+  static fromModelToView(post: PostDbDto, likes: ExtendedLikesInfoDto): ViewPostDto {
     const viewPost = new ViewPostDto();
     viewPost.id = post.id;
     viewPost.title = post.title;
@@ -60,7 +60,7 @@ export default class PostMapper {
   }
 
 
-  static _fromModelToView(post: Post): ViewPostDto {
+  static _fromModelToView(post: PostDbDto): ViewPostDto {
     const viewPost = new ViewPostDto();
     viewPost.id = post.id;
     viewPost.title = post.title;
@@ -73,7 +73,7 @@ export default class PostMapper {
     return viewPost;
   }
 
-  static fromModelsToPaginator(posts: PaginatorDto<Post[]>): PaginatorDto<ViewPostDto[]> {
+  static fromModelsToPaginator(posts: PaginatorDto<PostDbDto[]>): PaginatorDto<ViewPostDto[]> {
     return {
       pagesCount: posts.pagesCount,
       page: posts.page,

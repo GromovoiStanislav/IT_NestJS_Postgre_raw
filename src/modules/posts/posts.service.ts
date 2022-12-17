@@ -1,15 +1,16 @@
-import { PostsRepository } from "./posts.repository";
 import { InputPostDto } from "./dto/input-post.dto";
 import { ViewPostDto } from "./dto/view-post.dto";
 import PostMapper from "./dto/postsMapper";
-import { GetIdBannedBlogsCommand, GetOneBlogCommand } from "../blogs/blogs.service";
-import { Post } from "./schemas/posts.schema";
+//import { GetIdBannedBlogsCommand, GetOneBlogCommand } from "../blogs/blogs.service";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { InputBlogPostDto } from "./dto/input-blog-post.dto";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { PostLikesRepository } from "./postLikes.repository";
 import { GetIdBannedUsersCommand, GetUserByIdCommand } from "../users/users.service";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
+import { PostsPgPawRepository } from "./posts-pg-paw-repository";
+import { PostDbDto } from "./dto/posts-db.dto";
+import { GetOneBlogCommand } from "../blogs/blogs.service";
 
 
 //////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ export class ClearAllPostsCommand {
 @CommandHandler(ClearAllPostsCommand)
 export class ClearAllPostsUseCase implements ICommandHandler<ClearAllPostsCommand> {
   constructor(
-    protected postsRepository: PostsRepository,
+    protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesRepository
   ) {
   }
@@ -41,11 +42,14 @@ export class DeletePostCommand {
 
 @CommandHandler(DeletePostCommand)
 export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
-  constructor(protected postsRepository: PostsRepository) {
+  constructor(protected postsRepository: PostsPgPawRepository) {
   }
 
-  async execute(command: DeletePostCommand): Promise<Post | null> {
-    return this.postsRepository.deletePost(command.postId);
+  async execute(command: DeletePostCommand): Promise<void> {
+    const result = await this.postsRepository.deletePost(command.postId);
+    if (!result) {
+      throw new NotFoundException();
+    }
   }
 }
 
@@ -58,7 +62,7 @@ export class CreatePostCommand {
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
-  constructor(protected postsRepository: PostsRepository,
+  constructor(protected postsRepository: PostsPgPawRepository,
               private commandBus: CommandBus) {
   }
 
@@ -82,17 +86,17 @@ export class UpdatePostCommand {
 
 @CommandHandler(UpdatePostCommand)
 export class UpdatePostUseCase implements ICommandHandler<UpdatePostCommand> {
-  constructor(protected postsRepository: PostsRepository,
+  constructor(protected postsRepository: PostsPgPawRepository,
               private commandBus: CommandBus) {
   }
 
-  async execute(command: UpdatePostCommand): Promise<Post | null> {
+  async execute(command: UpdatePostCommand): Promise<void> {
     let blogName = "";
     const blog = await this.commandBus.execute(new GetOneBlogCommand(command.inputPost.blogId));
     if (blog) {
       blogName = blog.name;
     }
-    return this.postsRepository.updatePost(command.postId, PostMapper.fromInputPostDtoToUpdateDto(command.inputPost, blogName));
+    await this.postsRepository.updatePost(command.postId, PostMapper.fromInputPostDtoToUpdateDto(command.inputPost, blogName));
   }
 }
 
@@ -105,10 +109,10 @@ export class GetOnePostCommand {
 
 @CommandHandler(GetOnePostCommand)
 export class GetOnePostUseCase implements ICommandHandler<GetOnePostCommand> {
-  constructor(protected postsRepository: PostsRepository) {
+  constructor(protected postsRepository: PostsPgPawRepository) {
   }
 
-  async execute(command: GetOnePostCommand): Promise<Post | null> {
+  async execute(command: GetOnePostCommand): Promise<PostDbDto | null> {
     const post = await this.postsRepository.getOnePost(command.postId);
     if (post) {
       return PostMapper._fromModelToView(post);
@@ -127,16 +131,16 @@ export class GetOnePostWithLikesCommand {
 export class GetOnePostWithLikesUseCase implements ICommandHandler<GetOnePostWithLikesCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected postsRepository: PostsRepository,
+    protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesRepository
   ) {
   }
 
 //: Promise<ViewPostDto>
   async execute(command: GetOnePostWithLikesCommand) {
-    const banBlogsId = await this.commandBus.execute(new GetIdBannedBlogsCommand());
+    //const banBlogsId = await this.commandBus.execute(new GetIdBannedBlogsCommand());
 
-    const post = await this.postsRepository.getOnePost(command.postId, banBlogsId);
+    const post = await this.postsRepository.getOnePost(command.postId, true);
     if (!post) {
       throw new NotFoundException();
     }
@@ -158,7 +162,7 @@ export class GetAllPostsCommand {
 export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected postsRepository: PostsRepository,
+    protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesRepository
   ) {
   }
@@ -189,7 +193,7 @@ export class GetAllPostsByBlogIdCommand {
 export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsByBlogIdCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected postsRepository: PostsRepository,
+    protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesRepository
   ) {
   }
@@ -218,7 +222,7 @@ export class CreatePostByBlogIdCommand {
 export class CreatePostByBlogIdUseCase implements ICommandHandler<CreatePostByBlogIdCommand> {
   constructor(
     private commandBus: CommandBus,
-    private postsRepository: PostsRepository) {
+    private postsRepository: PostsPgPawRepository) {
   }
 
   async execute(command: CreatePostByBlogIdCommand): Promise<ViewPostDto | null> {
@@ -274,7 +278,7 @@ export class DeletePostByBlogIdAndPostIdCommand {
 @CommandHandler(DeletePostByBlogIdAndPostIdCommand)
 export class DeletePostByBlogIdAndPostIdUseCase implements ICommandHandler<DeletePostByBlogIdAndPostIdCommand> {
   constructor(private commandBus: CommandBus,
-              protected postsRepository: PostsRepository) {
+              protected postsRepository: PostsPgPawRepository) {
   }
 
   async execute(command: DeletePostByBlogIdAndPostIdCommand): Promise<void> {
@@ -307,7 +311,7 @@ export class UpdatePostByBlogIdAndPostIdCommand {
 export class UpdatePostByBlogIdAndPostIdUseCase implements ICommandHandler<UpdatePostByBlogIdAndPostIdCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected postsRepository: PostsRepository) {
+    protected postsRepository: PostsPgPawRepository) {
   }
 
   async execute(command: UpdatePostByBlogIdAndPostIdCommand): Promise<void> {
@@ -339,10 +343,10 @@ export class GetAllPostsByArrayOfBlogIdCommand {
 @CommandHandler(GetAllPostsByArrayOfBlogIdCommand)
 export class GetAllPostsByArrayOfBlogIdUseCase implements ICommandHandler<GetAllPostsByArrayOfBlogIdCommand> {
   constructor(
-    protected postsRepository: PostsRepository) {
+    protected postsRepository: PostsPgPawRepository) {
   }
 
-  async execute(command: GetAllPostsByArrayOfBlogIdCommand): Promise<Post[]> {
+  async execute(command: GetAllPostsByArrayOfBlogIdCommand): Promise<PostDbDto[]> {
     return await this.postsRepository.getAllPostsByArrayOfBlogsId(command.blogsId);
   }
 }

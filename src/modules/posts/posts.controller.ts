@@ -38,10 +38,7 @@ export class PostsController {
   @UseGuards(BaseAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePost(@Param("id") postId: string): Promise<void> {
-    const result = await this.commandBus.execute(new DeletePostCommand(postId));
-    if (!result) {
-      throw new NotFoundException();
-    }
+    await this.commandBus.execute(new DeletePostCommand(postId));
   }
 
 
