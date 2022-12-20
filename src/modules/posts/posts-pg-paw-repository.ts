@@ -57,6 +57,7 @@ export class PostsPgPawRepository {
     SET "title"=$2, "content"=$3, "shortDescription"=$4, "blogId"=$5, "blogName"=$6
     WHERE "id" = $1;
     `, [
+      postId,
       updatePostDto.title,
       updatePostDto.content,
       updatePostDto.shortDescription,
