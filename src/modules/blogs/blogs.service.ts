@@ -12,7 +12,7 @@ import { BanBlogInfo } from "./dto/blog-banInfo.dto";
 import dateAt from "../../utils/DateGenerator";
 import { InputBanBlogUserDto } from "../users/dto/input-blog-ban-user.dto";
 import { CreateBlogBanUserDto } from "./dto/create-blog-ban-user.dto";
-import { GetAllPostsByArrayOfBlogIdCommand } from "../posts/posts.service";
+import { GetAllPostsByArrayOfBlogIdCommand, GetAllPostsByBlogOwnerIdCommand } from "../posts/posts.service";
 import { GetAllCommentsByArrayOfPostIDCommand } from "../comments/comments.service";
 import { BlogsPgPawRepository } from "./blogs-pg-raw.repository";
 
@@ -364,8 +364,10 @@ export class GetAllCommentsForMyBlogsUseCase implements ICommandHandler<GetAllCo
 
   async execute(command: GetAllCommentsForMyBlogsCommand) {
 
-    const blogsId = (await this.blogsRepository.getAllBlogsByOwnerId(command.ownerId)).map(blog => blog.id);
-    const posts = await this.commandBus.execute(new GetAllPostsByArrayOfBlogIdCommand(blogsId));
+    //const blogsId = (await this.blogsRepository.getAllBlogsByOwnerId(command.ownerId)).map(blog => blog.id);
+    //const posts = await this.commandBus.execute(new GetAllPostsByArrayOfBlogIdCommand(blogsId));
+    const posts = await this.commandBus.execute(new GetAllPostsByBlogOwnerIdCommand(command.ownerId));
+
     const postsId = posts.map(post => post.id);
     const comments = await this.commandBus.execute(new GetAllCommentsByArrayOfPostIDCommand(command.paginationParams, postsId, command.ownerId));
 

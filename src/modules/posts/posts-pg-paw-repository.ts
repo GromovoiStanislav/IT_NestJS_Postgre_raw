@@ -95,7 +95,7 @@ export class PostsPgPawRepository {
   }
 
 
-  ////Доделать передачу массива в запрос
+  ////Доделать передачу массива в запрос или удалить
   async getAllPostsByArrayOfBlogsId(blogsId: string[]): Promise<PostDbDto[]> {
     return this.dataSource.query(`
     SELECT "id", "title", "content", "shortDescription", "blogId", "blogName", "createdAt"
@@ -103,6 +103,21 @@ export class PostsPgPawRepository {
     WHERE "blogId" in ($1);
     `, [blogsId]);
   }
+
+
+  async getAllPostsByBlogOwnerId(ownerId: string): Promise<PostDbDto[]> {
+    return this.dataSource.query(`
+    SELECT "id", "title", "content", "shortDescription", "blogId", "blogName", "createdAt"
+    FROM public."posts"
+    WHERE "blogId" in (
+        SELECT "id"
+        FROM public."blogs"
+        WHERE "ownerId" = $1
+    );
+    `, [ownerId]);
+  }
+
+
 
 
   async getAllPosts({

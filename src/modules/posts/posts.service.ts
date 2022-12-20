@@ -350,3 +350,22 @@ export class GetAllPostsByArrayOfBlogIdUseCase implements ICommandHandler<GetAll
     return await this.postsRepository.getAllPostsByArrayOfBlogsId(command.blogsId);
   }
 }
+
+
+
+//////////////////////////////////////////////////////////////
+export class GetAllPostsByBlogOwnerIdCommand {
+  constructor(public ownerId: string) {
+  }
+}
+
+@CommandHandler(GetAllPostsByBlogOwnerIdCommand)
+export class GetAllPostsByBlogOwnerIdUseCase implements ICommandHandler<GetAllPostsByBlogOwnerIdCommand> {
+  constructor(
+    protected postsRepository: PostsPgPawRepository) {
+  }
+
+  async execute(command: GetAllPostsByBlogOwnerIdCommand): Promise<PostDbDto[]> {
+    return await this.postsRepository.getAllPostsByBlogOwnerId(command.ownerId);
+  }
+}
