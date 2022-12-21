@@ -12,18 +12,24 @@ export class DeleteAllDataCommand {
   constructor() {
   }
 }
+
 @CommandHandler(DeleteAllDataCommand)
 export class DeleteAllDataUseCase implements ICommandHandler<DeleteAllDataCommand> {
-  constructor(private commandBus: CommandBus) {}
+  constructor(private commandBus: CommandBus) {
+  }
 
-  async execute(command:DeleteAllDataCommand){
+  async execute(command: DeleteAllDataCommand) {
     await Promise.all([
       this.commandBus.execute(new ClearAllUsersCommand()),
-      this.commandBus.execute(new ClearAllBlogsCommand()),
-      this.commandBus.execute(new ClearAllPostsCommand()),
-      this.commandBus.execute(new ClearAllCommentsCommand()),
-      this.commandBus.execute(new ClearAllDevicesCommand()),
+      this.commandBus.execute(new ClearAllDevicesCommand())
     ]).catch(() => {
     });
+
+
+    await this.commandBus.execute(new ClearAllUsersCommand());
+    await this.commandBus.execute(new ClearAllBlogsCommand());
+    await this.commandBus.execute(new ClearAllPostsCommand());
+    await this.commandBus.execute(new ClearAllCommentsCommand());
+
   }
 }
