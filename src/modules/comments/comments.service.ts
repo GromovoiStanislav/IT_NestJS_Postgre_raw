@@ -129,7 +129,7 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
     }
 
     const user = await this.commandBus.execute(new GetUserByIdCommand(comment.userId));
-    if (user.banInfo.isBanned) {
+    if (user.isBanned) {
       throw new NotFoundException();
     }
 
