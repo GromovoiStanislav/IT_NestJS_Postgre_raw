@@ -72,7 +72,7 @@ export class PostsPgPawRepository {
       result = await this.dataSource.query(`
         SELECT "id", "title", "content", "shortDescription", "blogId", "blogName", "createdAt"
         FROM public."posts"
-        WHERE "id" = '$1' and "blogId" in (
+        WHERE "id" = $1 and "blogId" in (
         SELECT "id"
         FROM public."blogs"
         WHERE "isBanned" = false)
@@ -100,7 +100,7 @@ export class PostsPgPawRepository {
     SELECT "id", "title", "content", "shortDescription", "blogId", "blogName", "createdAt"
     FROM public."posts"
     WHERE "blogId" in ($1);
-    `, [...blogsId]);
+    `, [blogsId]);
   }
 
 
