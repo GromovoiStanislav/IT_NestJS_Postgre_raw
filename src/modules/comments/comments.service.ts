@@ -123,7 +123,7 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
   constructor(
     private commandBus: CommandBus,
     protected commentsRepository: CommentsPgPawRepository,
-    protected commentLikesRepository: CommentLikesRepository
+    protected commentLikesRepository: CommentLikesPgPawRepository
   ) {
   }
 
@@ -138,9 +138,9 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
       throw new NotFoundException();
     }
 
-    const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
 
-    const likes = await this.commentLikesRepository.likesByCommentID(command.commentId, command.userId, usersId);
+    const likes = await this.commentLikesRepository.likesByCommentID(command.commentId, command.userId);//,usersId
     return CommentsMapper.fromModelToView(comment, likes);
   }
 }
@@ -191,7 +191,7 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
   constructor(
     private commandBus: CommandBus,
     protected commentsRepository: CommentsPgPawRepository,
-    protected commentLikesRepository: CommentLikesRepository
+    protected commentLikesRepository: CommentLikesPgPawRepository
   ) {
   }
 
@@ -203,11 +203,11 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
     }
 
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
-    const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
 
 
     const items = await Promise.all(result.items.map(async comment => {
-      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId, usersId);
+      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);//, usersId
       return CommentsMapper.fromModelToView(comment, likes);
     }));
 
@@ -227,7 +227,7 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
   constructor(
     //private commandBus: CommandBus,
     protected commentsRepository: CommentsPgPawRepository,
-    protected commentLikesRepository: CommentLikesRepository
+    protected commentLikesRepository: CommentLikesPgPawRepository
   ) {
   }
 
@@ -235,10 +235,10 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
 
     const result = await this.commentsRepository.getAllCommentsByArrayOfPosts(command.paginationParams, command.postsId);
     //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-    const usersId = [];
+    //const usersId = [];
 
     const items = await Promise.all(result.items.map(async comment => {
-      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId, usersId);
+      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);//, usersId
       return CommentsMapper.fromModelToOwnerView(comment, likes);
     }));
 

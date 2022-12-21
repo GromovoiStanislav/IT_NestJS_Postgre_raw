@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 import { CommentLikeDbDto } from "./dto/comment-likes-db.dto";
+import { LikesInfoDto } from "../../commonDto/likesInfoDto";
 
 
 @Injectable()
@@ -31,7 +32,7 @@ export class CommentLikesPgPawRepository {
     SELECT "commentId", "userId", "likeStatus"
     FROM public."commentLikes"
     WHERE "commentId"=$1 and "userId"=$2;
-    `, [commentId,userId]);
+    `, [commentId, userId]);
 
     if (result.length > 0) {
       return result[0];
@@ -48,7 +49,7 @@ export class CommentLikesPgPawRepository {
     `, [
       commentId,
       userId,
-      likeStatus,
+      likeStatus
     ]);
 
   }
@@ -67,10 +68,31 @@ export class CommentLikesPgPawRepository {
   }
 
 
+  async likesByCommentID(commentId: string, userId: string): Promise<LikesInfoDto> {
+    const result = await this.dataSource.query(`
+    WITH not_banned_likes AS ( 
+        SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
+        WHERE "userId" in (
+        SELECT "id"
+        FROM public."users"
+        WHERE "isBanned"=false
+        )
+    )
+    SELECT 
+    (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
+    (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
+    (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus";
+    `, [commentId, userId]);
 
-  //async likesByCommentID(commentId: string, userId: string, banUsersId: string[]): Promise<LikesInfoDto> {
-   // return { likesCount, dislikesCount, myStatus };
-  //}
+    if (result.length > 0) {
+      return {
+        likesCount: result[0].likesCount,
+        dislikesCount: result[0].dislikesCount,
+        myStatus: result[0].myStatus ? result[0].myStatus : "None"
+      };
+    }
+    return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
+  }
 
 
 }
