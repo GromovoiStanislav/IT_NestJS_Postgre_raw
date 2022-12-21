@@ -100,9 +100,13 @@ export class UpdateCommentLikeUseCase implements ICommandHandler<UpdateCommentLi
       throw new NotFoundException();
     }
     if (command.likeStatus === "None") {
-      await this.commentLikesRepository.deleteByCommentIDUserID(command.commentId, command.userId);
+      await this.commentLikesRepository.deleteCommentLike(command.commentId, command.userId);
     } else {
-      await this.commentLikesRepository.updateLikeByID(command.commentId, command.userId, command.likeStatus);
+      if(await this.commentLikesRepository.findCommentLike(command.commentId, command.userId)){
+        await this.commentLikesRepository.updateCommentLike(command.commentId, command.userId, command.likeStatus)
+      } else {
+        await this.commentLikesRepository.createCommentLike(command.commentId, command.userId, command.likeStatus)
+      }
     }
   }
 }
