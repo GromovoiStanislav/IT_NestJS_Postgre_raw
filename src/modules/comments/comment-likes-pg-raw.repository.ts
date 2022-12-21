@@ -86,8 +86,8 @@ export class CommentLikesPgPawRepository {
 
     if (result.length > 0) {
       return {
-        likesCount: result[0].likesCount,
-        dislikesCount: result[0].dislikesCount,
+        likesCount: +result[0].likesCount,
+        dislikesCount: +result[0].dislikesCount,
         myStatus: result[0].myStatus ? result[0].myStatus : "None"
       };
     }
