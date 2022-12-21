@@ -102,10 +102,10 @@ export class UpdateCommentLikeUseCase implements ICommandHandler<UpdateCommentLi
     if (command.likeStatus === "None") {
       await this.commentLikesRepository.deleteCommentLike(command.commentId, command.userId);
     } else {
-      if(await this.commentLikesRepository.findCommentLike(command.commentId, command.userId)){
-        await this.commentLikesRepository.updateCommentLike(command.commentId, command.userId, command.likeStatus)
+      if (await this.commentLikesRepository.findCommentLike(command.commentId, command.userId)) {
+        await this.commentLikesRepository.updateCommentLike(command.commentId, command.userId, command.likeStatus);
       } else {
-        await this.commentLikesRepository.createCommentLike(command.commentId, command.userId, command.likeStatus)
+        await this.commentLikesRepository.createCommentLike(command.commentId, command.userId, command.likeStatus);
       }
     }
   }
@@ -207,7 +207,7 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
 
 
     const items = await Promise.all(result.items.map(async comment => {
-      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);//, usersId
+      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
       return CommentsMapper.fromModelToView(comment, likes);
     }));
 

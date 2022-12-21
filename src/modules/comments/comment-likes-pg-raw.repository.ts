@@ -72,10 +72,10 @@ export class CommentLikesPgPawRepository {
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
-        WHERE "userId" in (
+        WHERE "commentId"=$1 and "userId" in (
         SELECT "id"
         FROM public."users"
-        WHERE "isBanned"=false
+        WHERE "isBanned" = false
         )
     )
     SELECT 
