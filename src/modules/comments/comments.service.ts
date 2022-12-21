@@ -8,6 +8,7 @@ import { GetIdBannedUsersCommand, GetUserByIdCommand } from "../users/users.serv
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { IsUserBannedForBlogCommand } from "../blogs/blogs.service";
 import { CommentsPgPawRepository } from "./comments-pg-paw-repository";
+import { CommentLikesPgPawRepository } from "./comment-likes-pg-raw.repository";
 
 
 //////////////////////////////////////////////////
@@ -18,7 +19,7 @@ export class ClearAllCommentsCommand {
 export class ClearAllCommentsUseCase implements ICommandHandler<ClearAllCommentsCommand> {
   constructor(
     protected commentsRepository: CommentsPgPawRepository,
-    protected commentLikesRepository: CommentLikesRepository
+    protected commentLikesRepository: CommentLikesPgPawRepository
   ) {
   }
 
@@ -89,7 +90,7 @@ export class UpdateCommentLikeCommand {
 export class UpdateCommentLikeUseCase implements ICommandHandler<UpdateCommentLikeCommand> {
   constructor(
     protected commentsRepository: CommentsPgPawRepository,
-    protected commentLikesRepository: CommentLikesRepository
+    protected commentLikesRepository: CommentLikesPgPawRepository
   ) {
   }
 

@@ -15,6 +15,7 @@ import { UserIdMiddleware } from "../../middlewares/userId.middleware";
 import { CommentsController } from "./comments.controller";
 import { JWT_Module } from "../jwt/jwt.module";
 import { CommentsPgPawRepository } from "./comments-pg-paw-repository";
+import { CommentLikesPgPawRepository } from "./comment-likes-pg-raw.repository";
 
 const useCases = [
   ClearAllCommentsUseCase,
@@ -37,7 +38,7 @@ const useCases = [
     JWT_Module
   ],
   controllers: [CommentsController],
-  providers: [...useCases, CommentsPgPawRepository, CommentLikesRepository]
+  providers: [...useCases, CommentsPgPawRepository, CommentLikesPgPawRepository,CommentLikesRepository]
 })
 
 export class CommentsModule implements NestModule {

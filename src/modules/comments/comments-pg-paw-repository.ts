@@ -25,12 +25,11 @@ export class CommentsPgPawRepository {
   }
 
 
-  async deleteComment(commentId: string): Promise<number> {
-    const result = await this.dataSource.query(`
+  async deleteComment(commentId: string): Promise<void> {
+    await this.dataSource.query(`
     DELETE FROM public."comments"
     WHERE "id" = $1;
     `, [commentId]);
-    return result[1];
   }
 
 
