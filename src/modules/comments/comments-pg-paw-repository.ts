@@ -63,7 +63,7 @@ export class CommentsPgPawRepository {
     const result = await this.dataSource.query(`
     INSERT INTO public."comments"(
     "id", "postId", "content", "userId", "userLogin", "createdAt")
-    VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;
+    VALUES ($1, $2, $3, $4, $5, $6);
     `, [
       createCommentDto.id,
       createCommentDto.postId,
@@ -72,7 +72,7 @@ export class CommentsPgPawRepository {
       createCommentDto.userLogin,
       createCommentDto.createdAt
     ]);
-    return result;
+    return createCommentDto;
   }
 
 
