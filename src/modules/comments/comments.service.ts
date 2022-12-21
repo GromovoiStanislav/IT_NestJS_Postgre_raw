@@ -161,8 +161,8 @@ export class CreateCommentByPostIDUseCase implements ICommandHandler<CreateComme
       throw new NotFoundException();
     }
 
-    if(await this.commandBus.execute(new IsUserBannedForBlogCommand(post.blogId,command.userId))){
-      throw new ForbiddenException()
+    if (await this.commandBus.execute(new IsUserBannedForBlogCommand(post.blogId, command.userId))) {
+      throw new ForbiddenException();
     }
 
     const user = await this.commandBus.execute(new GetUserByIdCommand(command.userId));
@@ -213,7 +213,7 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
 
 /////////////////////////////////////////////
 export class GetAllCommentsByArrayOfPostIDCommand {
-  constructor(public paginationParams: PaginationParams, public postsId: string[], public userId:string) {
+  constructor(public paginationParams: PaginationParams, public postsId: string[], public userId: string) {
   }
 }
 

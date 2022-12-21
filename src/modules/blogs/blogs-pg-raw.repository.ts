@@ -43,7 +43,7 @@ export class BlogsPgPawRepository {
                     includeBanned: boolean,
                     userId?: string): Promise<PaginatorDto<BlogBdDto[]>> {
 
-    if (!["name","websiteUrl", "description", "createdAt","userLogin"].includes(sortBy)) {
+    if (!["name", "websiteUrl", "description", "createdAt", "userLogin"].includes(sortBy)) {
       sortBy = "createdAt";
     }
     const order = sortDirection === "asc" ? "ASC" : "DESC";
@@ -83,8 +83,6 @@ export class BlogsPgPawRepository {
 
     return { pagesCount, page, pageSize, totalCount, items };
   }
-
-
 
 
   async deleteBlog(blogId: string): Promise<number> {
@@ -203,8 +201,8 @@ export class BlogsPgPawRepository {
     const result = await this.dataSource.query(`
     SELECT "blogId", "userId", "login", "createdAt", "banReason"
     FROM public."blogBannedUsers"
-    WHERE "blogId" = $1 and "blogId" = $2;
-    `, [userId, blogId]);
+    WHERE "blogId" = $1 and "userId" = $2;
+    `, [blogId, userId]);
 
     if (result.length > 0) {
       return result[0];
@@ -239,7 +237,7 @@ export class BlogsPgPawRepository {
     ${filter}
     ORDER BY "${sortBy}" COLLATE "C" ${order}
     LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize};
-    `,[blogId]);
+    `, [blogId]);
 
 
     let totalCount = 0;
@@ -247,7 +245,7 @@ export class BlogsPgPawRepository {
     SELECT COUNT(*)
     FROM public."blogBannedUsers"
     ${filter};
-    `,[blogId]);
+    `, [blogId]);
     if (resultCount.length > 0) {
       totalCount = +resultCount[0].count;
     }

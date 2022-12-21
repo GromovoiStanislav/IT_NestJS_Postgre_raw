@@ -346,7 +346,6 @@ export class IsUserBannedForBlogUseCase implements ICommandHandler<IsUserBannedF
 
   async execute(command: IsUserBannedForBlogCommand): Promise<boolean> {
     return !!(await this.blogsRepository.findBannedUserForBlog(command.blogId, command.userId));
-
   }
 }
 
