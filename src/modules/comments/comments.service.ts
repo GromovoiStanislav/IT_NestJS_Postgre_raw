@@ -162,9 +162,8 @@ export class CreateCommentByPostIDUseCase implements ICommandHandler<CreateComme
     }
 
     if(await this.commandBus.execute(new IsUserBannedForBlogCommand(post.blogId,command.userId))){
-      throw new  ForbiddenException()
+      throw new ForbiddenException()
     }
-
 
     const user = await this.commandBus.execute(new GetUserByIdCommand(command.userId));
 

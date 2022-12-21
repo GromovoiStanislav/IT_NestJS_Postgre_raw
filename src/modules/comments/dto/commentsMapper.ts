@@ -1,11 +1,11 @@
 import { InputCommentDto } from "./input-comment.dto";
 import { UpdateCommentDto } from "./update-comment.dto";
-import { Comment } from "../schemas/comments.schema";
 import { ViewCommentDto } from "./view-comment.dto";
 import { LikesInfoDto } from "../../../commonDto/likesInfoDto";
 import uid from "../../../utils/IdGenerator";
 import dateAt from "../../../utils/DateGenerator";
 import { CreateCommentDto } from "./create-comment.dto";
+import { CommentDbDto } from "./comments-db.dto";
 
 export default class CommentsMapper {
 
@@ -27,7 +27,7 @@ export default class CommentsMapper {
   }
 
 
-  static fromModelToView(comment: Comment, likes: LikesInfoDto): ViewCommentDto {
+  static fromModelToView(comment: CommentDbDto, likes: LikesInfoDto): ViewCommentDto {
     const viewComment = new ViewCommentDto();
     viewComment.id = comment.id;
     viewComment.content = comment.content;
@@ -39,7 +39,7 @@ export default class CommentsMapper {
   }
 
 
-  static _fromModelToView(comment: Comment): ViewCommentDto {
+  static _fromModelToView(comment: CommentDbDto): ViewCommentDto {
     const viewComment = new ViewCommentDto();
     viewComment.id = comment.id;
     viewComment.content = comment.content;
@@ -51,7 +51,7 @@ export default class CommentsMapper {
   }
 
 
-  static fromModelToOwnerView(comment: Comment, likes: LikesInfoDto) {
+  static fromModelToOwnerView(comment: CommentDbDto, likes: LikesInfoDto) {
     return {
       id: comment.id,
       content: comment.content,
