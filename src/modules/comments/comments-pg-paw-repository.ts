@@ -47,6 +47,37 @@ export class CommentsPgPawRepository {
   }
 
 
+
+  async findCommentWithLikes(commentId: string) {
+    const result = await this.dataSource.query(`
+    SELECT "id", "postId", "content", "userId", "userLogin", "createdAt",
+    (WITH not_banned_likes AS ( 
+        SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
+        WHERE "commentId"=$1 and "userId" in (
+        SELECT "id"
+        FROM public."users"
+        WHERE "isBanned" = false
+        )
+    )
+    SELECT 
+    (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
+    (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
+    (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus") as "likesInfo"
+    FROM public."comments"
+    WHERE "id" = $1;
+    `, [commentId]);
+
+    if (result.length > 0) {
+      return result[0];
+    }
+    return null;
+  }
+
+
+
+
+
+
   async updateComment(commentId: string, updateCommentDto: UpdateCommentDto): Promise<void> {
     await this.dataSource.query(`
     UPDATE public."comments"

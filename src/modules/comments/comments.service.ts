@@ -9,6 +9,7 @@ import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { IsUserBannedForBlogCommand } from "../blogs/blogs.service";
 import { CommentsPgPawRepository } from "./comments-pg-paw-repository";
 import { CommentLikesPgPawRepository } from "./comment-likes-pg-raw.repository";
+import { ViewCommentDto } from "./dto/view-comment.dto";
 
 
 //////////////////////////////////////////////////
@@ -128,7 +129,7 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
   }
 
   async execute(command: GetCommentCommand) {
-    const comment = await this.commentsRepository.findComment(command.commentId);
+    const comment = await this.commentsRepository.findCommentWithLikes(command.commentId);//findComment
     if (!comment) {
       throw new NotFoundException();
     }
@@ -139,9 +140,27 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
     }
 
     //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    // const likes = await this.commentLikesRepository.likesByCommentID(command.commentId, command.userId);//,usersId
+    // return CommentsMapper.fromModelToView(comment, likes);
 
-    const likes = await this.commentLikesRepository.likesByCommentID(command.commentId, command.userId);//,usersId
-    return CommentsMapper.fromModelToView(comment, likes);
+
+    const likesInfo = comment.likesInfo.length > 0 ? {
+      likesCount: +comment.likesInfo[0].likesCount,
+      dislikesCount: +comment.likesInfo[0].dislikesCount,
+      myStatus: comment.likesInfo[0].myStatus ? comment.likesInfo.myStatus : "None"
+    } : { likesCount: 0, dislikesCount: 0, myStatus: "None" };
+
+
+    return {
+      id: comment.id,
+      content: comment.content,
+      userId: comment.userId,
+      userLogin: comment.userLogin,
+      createdAt: comment.createdAt,
+      likesInfo: likesInfo
+    };
+
+
   }
 }
 
