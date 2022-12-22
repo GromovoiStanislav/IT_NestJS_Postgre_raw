@@ -147,7 +147,7 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
     const likesInfo =  {
       likesCount: +comment.likesCount,
       dislikesCount: +comment.dislikesCount,
-      myStatus: comment.myStatus ? comment.likesInfo.myStatus : "None"
+      myStatus: comment.myStatus ? comment.myStatus : "None"
     }
 
 
