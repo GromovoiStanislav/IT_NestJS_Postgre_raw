@@ -1,5 +1,4 @@
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { CommentLikesRepository } from "./commentLikes.repository";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { InputCommentDto } from "./dto/input-comment.dto";
 import CommentsMapper from "./dto/commentsMapper";
@@ -9,7 +8,7 @@ import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { IsUserBannedForBlogCommand } from "../blogs/blogs.service";
 import { CommentsPgPawRepository } from "./comments-pg-paw-repository";
 import { CommentLikesPgPawRepository } from "./comment-likes-pg-raw.repository";
-import { ViewCommentDto } from "./dto/view-comment.dto";
+
 
 
 //////////////////////////////////////////////////
@@ -149,16 +148,16 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
       dislikesCount: +comment.dislikesCount,
       myStatus: comment.myStatus ? comment.myStatus : "None"
     }
+    return CommentsMapper.fromModelToView(comment, likesInfo);
 
-
-    return {
-      id: comment.id,
-      content: comment.content,
-      userId: comment.userId,
-      userLogin: comment.userLogin,
-      createdAt: comment.createdAt,
-      likesInfo: likesInfo
-    };
+    // return {
+    //   id: comment.id,
+    //   content: comment.content,
+    //   userId: comment.userId,
+    //   userLogin: comment.userLogin,
+    //   createdAt: comment.createdAt,
+    //   likesInfo: likesInfo
+    // };
 
 
   }

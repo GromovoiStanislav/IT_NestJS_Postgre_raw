@@ -1,9 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
-import { MongooseModule } from "@nestjs/mongoose";
-import { Comment, CommentSchema } from "./schemas/comments.schema";
-import { CommentLike, CommentLikeSchema } from "./schemas/comment-likes.schema";
-import { CommentLikesRepository } from "./commentLikes.repository";
 import {
   ClearAllCommentsUseCase, CreateCommentByPostIDUseCase,
   DeleteCommentUseCase, GetAllCommentsByArrayOfPostIDUseCase, GetAllCommentsByPostIDUseCase,
@@ -31,14 +27,10 @@ const useCases = [
 @Module({
   imports: [
     CqrsModule,
-    MongooseModule.forFeature([
-      { name: Comment.name, schema: CommentSchema },
-      { name: CommentLike.name, schema: CommentLikeSchema }
-    ]),
     JWT_Module
   ],
   controllers: [CommentsController],
-  providers: [...useCases, CommentsPgPawRepository, CommentLikesPgPawRepository,CommentLikesRepository]
+  providers: [...useCases, CommentsPgPawRepository, CommentLikesPgPawRepository]
 })
 
 export class CommentsModule implements NestModule {

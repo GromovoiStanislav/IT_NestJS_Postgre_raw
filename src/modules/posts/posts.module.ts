@@ -9,7 +9,6 @@ import {
   GetOnePostUseCase, GetOnePostWithLikesUseCase, PostsUpdateLikeByIDUseCase, UpdatePostByBlogIdAndPostIdUseCase,
   UpdatePostUseCase
 } from "./posts.service";
-import { Post, PostSchema } from "./schemas/posts.schema";
 import { CqrsModule } from "@nestjs/cqrs";
 import { PostLike, PostLikeSchema } from "./schemas/post-likes.schema";
 import { PostLikesRepository } from "./postLikes.repository";
@@ -38,7 +37,6 @@ const useCases = [
 @Module({
   imports: [CqrsModule,
     MongooseModule.forFeature([
-      { name: Post.name, schema: PostSchema },
       { name: PostLike.name, schema: PostLikeSchema }
     ]),
     JWT_Module],

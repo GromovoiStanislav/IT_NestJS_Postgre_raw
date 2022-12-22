@@ -50,32 +50,57 @@ export class CommentsPgPawRepository {
 
   async findCommentWithLikes(commentId: string, userId: string) {
     const result = await this.dataSource.query(`
+    SELECT "id","postId","content","userId","userLogin","createdAt",
+    l."likesCount", l."dislikesCount", l."myStatus"
+
+    FROM public."comments"
+    join (
     WITH not_banned_likes AS ( 
         SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
         WHERE "commentId"=$1 and "userId" in (
         SELECT "id"
         FROM public."users"
         WHERE "isBanned" = false
-        )
     )
-  
+    )
     SELECT 
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
-    (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus",
+    (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus"
+    ) l ON true=true
 
-    (SELECT "id" FROM public."comments" WHERE "id" = $1 ) as "id",
-    (SELECT "postId" FROM public."comments" WHERE "id" = $1 ) as "postId",
-    (SELECT "content" FROM public."comments" WHERE "id" = $1 ) as "content",
-    (SELECT "userId" FROM public."comments" WHERE "id" = $1 ) as "userId",
-    (SELECT "userLogin" FROM public."comments" WHERE "id" = $1 ) as "userLogin",
-    (SELECT "createdAt" FROM public."comments" WHERE "id" = $1 ) as "createdAt";
+    WHERE "id" = $1
     `, [commentId, userId]);
 
     if (result.length > 0) {
       return result[0];
     }
     return null;
+
+
+  //   WITH not_banned_likes AS (
+  //     SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
+  //   WHERE "commentId"=$1 and "userId" in (
+  //     SELECT "id"
+  //   FROM public."users"
+  //   WHERE "isBanned" = false
+  // )
+  // )
+  //
+  //   SELECT
+  //   (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
+  //     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
+  //     (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus",
+  //
+  //     (SELECT "id" FROM public."comments" WHERE "id" = $1 ) as "id",
+  //     (SELECT "postId" FROM public."comments" WHERE "id" = $1 ) as "postId",
+  //     (SELECT "content" FROM public."comments" WHERE "id" = $1 ) as "content",
+  //     (SELECT "userId" FROM public."comments" WHERE "id" = $1 ) as "userId",
+  //     (SELECT "userLogin" FROM public."comments" WHERE "id" = $1 ) as "userLogin",
+  //     (SELECT "createdAt" FROM public."comments" WHERE "id" = $1 ) as "createdAt";
+
+
+
   }
 
 
