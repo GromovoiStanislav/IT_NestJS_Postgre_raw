@@ -129,7 +129,7 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
   }
 
   async execute(command: GetCommentCommand) {
-    const comment = await this.commentsRepository.findCommentWithLikes(command.commentId);//findComment
+    const comment = await this.commentsRepository.findCommentWithLikes(command.commentId, command.userId);//findComment
     if (!comment) {
       throw new NotFoundException();
     }
