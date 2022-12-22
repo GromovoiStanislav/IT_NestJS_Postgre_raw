@@ -3,7 +3,7 @@ import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { InputCommentDto } from "./dto/input-comment.dto";
 import CommentsMapper from "./dto/commentsMapper";
 import { GetOnePostCommand } from "../posts/posts.service";
-import { GetIdBannedUsersCommand, GetUserByIdCommand } from "../users/users.service";
+import { GetUserByIdCommand } from "../users/users.service";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { IsUserBannedForBlogCommand } from "../blogs/blogs.service";
 import { CommentsPgPawRepository } from "./comments-pg-paw-repository";
@@ -122,8 +122,7 @@ export class GetCommentCommand {
 export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected commentsRepository: CommentsPgPawRepository,
-    protected commentLikesRepository: CommentLikesPgPawRepository
+    protected commentsRepository: CommentsPgPawRepository
   ) {
   }
 
@@ -138,27 +137,12 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
       throw new NotFoundException();
     }
 
-    //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-    // const likes = await this.commentLikesRepository.likesByCommentID(command.commentId, command.userId);//,usersId
-    // return CommentsMapper.fromModelToView(comment, likes);
-
-
     const likesInfo =  {
       likesCount: +comment.likesCount,
       dislikesCount: +comment.dislikesCount,
       myStatus: comment.myStatus ? comment.myStatus : "None"
     }
     return CommentsMapper.fromModelToView(comment, likesInfo);
-
-    // return {
-    //   id: comment.id,
-    //   content: comment.content,
-    //   userId: comment.userId,
-    //   userLogin: comment.userLogin,
-    //   createdAt: comment.createdAt,
-    //   likesInfo: likesInfo
-    // };
-
 
   }
 }
@@ -221,8 +205,6 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
     }
 
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
-    //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-
 
     const items = await Promise.all(result.items.map(async comment => {
       const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
@@ -243,7 +225,6 @@ export class GetAllCommentsByArrayOfPostIDCommand {
 @CommandHandler(GetAllCommentsByArrayOfPostIDCommand)
 export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<GetAllCommentsByArrayOfPostIDCommand> {
   constructor(
-    //private commandBus: CommandBus,
     protected commentsRepository: CommentsPgPawRepository,
     protected commentLikesRepository: CommentLikesPgPawRepository
   ) {
@@ -252,11 +233,9 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
   async execute(command: GetAllCommentsByArrayOfPostIDCommand) {
 
     const result = await this.commentsRepository.getAllCommentsByArrayOfPosts(command.paginationParams, command.postsId);
-    //const usersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-    //const usersId = [];
 
     const items = await Promise.all(result.items.map(async comment => {
-      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);//, usersId
+      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
       return CommentsMapper.fromModelToOwnerView(comment, likes);
     }));
 
