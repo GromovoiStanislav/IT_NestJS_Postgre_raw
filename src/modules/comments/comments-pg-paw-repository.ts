@@ -50,7 +50,6 @@ export class CommentsPgPawRepository {
 
   async findCommentWithLikes(commentId: string) {
     const result = await this.dataSource.query(`
-    SELECT "id", "postId", "content", "userId", "userLogin", "createdAt",
     (WITH not_banned_likes AS ( 
         SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
         WHERE "commentId"=$1 and "userId" in (
@@ -59,10 +58,10 @@ export class CommentsPgPawRepository {
         WHERE "isBanned" = false
         )
     )
-    SELECT 
+    SELECT "id", "postId", "content", "userId", "userLogin", "createdAt", 
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
-    (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus") as "likesInfo"
+    (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus"
     FROM public."comments"
     WHERE "id" = $1;
     `, [commentId]);

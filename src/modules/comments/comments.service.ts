@@ -144,11 +144,11 @@ export class GetCommentUseCase implements ICommandHandler<GetCommentCommand> {
     // return CommentsMapper.fromModelToView(comment, likes);
 
 
-    const likesInfo = comment.likesInfo.length > 0 ? {
-      likesCount: +comment.likesInfo[0].likesCount,
-      dislikesCount: +comment.likesInfo[0].dislikesCount,
-      myStatus: comment.likesInfo[0].myStatus ? comment.likesInfo.myStatus : "None"
-    } : { likesCount: 0, dislikesCount: 0, myStatus: "None" };
+    const likesInfo =  {
+      likesCount: +comment.likesCount,
+      dislikesCount: +comment.dislikesCount,
+      myStatus: comment.myStatus ? comment.likesInfo.myStatus : "None"
+    }
 
 
     return {
