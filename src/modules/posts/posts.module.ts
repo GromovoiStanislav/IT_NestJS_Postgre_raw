@@ -16,6 +16,7 @@ import { UserIdMiddleware } from "../../middlewares/userId.middleware";
 import { JWT_Module } from "../jwt/jwt.module";
 import { BlogIdValidator } from "./dto/blogId.validator";
 import { PostsPgPawRepository } from "./posts-pg-paw-repository";
+import { PostLikesPgPawRepository } from "./post-likess-pg-paw-repository";
 
 
 const useCases = [
@@ -41,7 +42,7 @@ const useCases = [
     ]),
     JWT_Module],
   controllers: [PostsController],
-  providers: [...useCases, PostsPgPawRepository, PostLikesRepository, BlogIdValidator],
+  providers: [...useCases, PostsPgPawRepository, PostLikesPgPawRepository, PostLikesRepository, BlogIdValidator],
   exports: []
 })
 

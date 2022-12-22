@@ -11,6 +11,7 @@ import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PostsPgPawRepository } from "./posts-pg-paw-repository";
 import { PostDbDto } from "./dto/posts-db.dto";
 import { GetOneBlogCommand } from "../blogs/blogs.service";
+import { PostLikesPgPawRepository } from "./post-likess-pg-paw-repository";
 
 
 //////////////////////////////////////////////////////////////
@@ -21,7 +22,7 @@ export class ClearAllPostsCommand {
 export class ClearAllPostsUseCase implements ICommandHandler<ClearAllPostsCommand> {
   constructor(
     protected postsRepository: PostsPgPawRepository,
-    protected postLikesRepository: PostLikesRepository
+    protected postLikesRepository: PostLikesPgPawRepository
   ) {
   }
 
@@ -253,7 +254,7 @@ export class PostsUpdateLikeByIDCommand {
 export class PostsUpdateLikeByIDUseCase implements ICommandHandler<PostsUpdateLikeByIDCommand> {
   constructor(
     private commandBus: CommandBus,
-    protected postLikesRepository: PostLikesRepository
+    protected postLikesRepository: PostLikesPgPawRepository
   ) {
   }
 
@@ -263,7 +264,12 @@ export class PostsUpdateLikeByIDUseCase implements ICommandHandler<PostsUpdateLi
     if (command.likeStatus === "None") {
       await this.postLikesRepository.deleteByPostIDUserID(command.postId, command.userId);
     } else {
-      await this.postLikesRepository.updateLikeByID(command.postId, command.userId, user.login, command.likeStatus);
+      if (await this.postLikesRepository.findCommentLike(command.postId, command.userId)) {
+        await this.postLikesRepository.updateCommentLike(command.postId, command.userId, user.login, command.likeStatus);
+      } else {
+        await this.postLikesRepository.createCommentLike(command.postId, command.userId, user.login, command.likeStatus);
+      }
+      //await this.postLikesRepository.updateLikeByID(command.postId, command.userId, user.login, command.likeStatus);
     }
   }
 }

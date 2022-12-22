@@ -51,7 +51,6 @@ export class CommentLikesPgPawRepository {
       userId,
       likeStatus
     ]);
-
   }
 
 
