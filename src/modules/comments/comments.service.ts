@@ -197,13 +197,15 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
   ) {
   }
 
+
   async execute(command: GetAllCommentsByPostIDCommand) {
+
+    return ("postId":command.postId,"userId":command.userId)
 
     const post = await this.commandBus.execute(new GetOnePostCommand(command.postId));
     if (!post) {
       throw new NotFoundException();
     }
-
 
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
 
