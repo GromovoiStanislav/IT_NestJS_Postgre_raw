@@ -96,7 +96,7 @@ export class PostLikesPgPawRepository {
         newestLikes: await this.newestLikes(postId)
       };
     }
-
+    return { likesCount: 0, dislikesCount: 0, myStatus: "None",newestLikes:[] };
   }
 
 
