@@ -76,7 +76,7 @@ export class PostsPgPawRepository {
         WHERE "id" = $1 and "blogId" in (
         SELECT "id"
         FROM public."blogs"
-        WHERE "isBanned" = false)
+        WHERE "isBanned" = false);
     `, [postId]);
 
     } else {
