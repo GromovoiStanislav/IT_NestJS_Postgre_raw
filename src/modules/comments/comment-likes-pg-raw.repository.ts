@@ -72,17 +72,18 @@ export class CommentLikesPgPawRepository {
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
-        WHERE "commentId"=$1 and "userId" in (
-        SELECT "id"
-        FROM public."users"
-        WHERE "isBanned" = false
+        WHERE "userId" in (
+            SELECT "id"
+            FROM public."users"
+            WHERE "isBanned" = false
         )
     )
     SELECT 
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount";
-    `, [commentId]);
+    `);//, [commentId]
 
+    //WHERE "commentId"=$1 and "userId" in (
     //(SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
 
     return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
