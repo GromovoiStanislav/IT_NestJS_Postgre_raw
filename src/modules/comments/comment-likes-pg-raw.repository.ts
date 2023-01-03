@@ -82,10 +82,10 @@ export class CommentLikesPgPawRepository {
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
     (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 ) as "myStatus";
-    `, [commentId, userId]);
+    `, [commentId, userId ? userId : "null"]);
 
 
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None" }
+    return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
 
     if (result.length > 0) {
       return {
