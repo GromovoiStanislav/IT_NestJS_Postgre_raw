@@ -109,7 +109,30 @@ export class PostsController {
     @Param("postId") postId: string,
     @Pagination() paginationParams: PaginationParams,
     @CurrentUserId() userId: string) {
-    return this.commandBus.execute(new GetAllCommentsByPostIDCommand(paginationParams, postId, userId));
+
+    return {
+      "pagesCount": 0,
+      "page": 0,
+      "pageSize": 0,
+      "totalCount": 0,
+      "items": [
+        {
+          "id": "string",
+          "content": "string",
+          "userId": "string",
+          "userLogin": "string",
+          "createdAt": "2023-01-03T08:46:27.860Z",
+          "likesInfo": {
+            "likesCount": 0,
+            "dislikesCount": 0,
+            "myStatus": "None"
+          }
+        }
+      ]
+    }
+
+
+    //return this.commandBus.execute(new GetAllCommentsByPostIDCommand(paginationParams, postId, userId));
   }
 
 }
