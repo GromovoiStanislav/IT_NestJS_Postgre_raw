@@ -200,7 +200,7 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
 
   async execute(command: GetAllCommentsByPostIDCommand) {
 
-    //return {"postId":command.postId,"userId": command.userId}
+    return {"postId":command.postId,"userId": command.userId}
 
     const post = await this.commandBus.execute(new GetOnePostCommand(command.postId));
     if (!post) {
