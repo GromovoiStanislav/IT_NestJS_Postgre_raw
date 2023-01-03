@@ -204,6 +204,30 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
       throw new NotFoundException();
     }
 
+
+    return {
+      "pagesCount": 0,
+      "page": 0,
+      "pageSize": 0,
+      "totalCount": 0,
+      "items": [
+        {
+          "id": "string",
+          "content": "string",
+          "userId": "string",
+          "userLogin": "string",
+          "createdAt": "2023-01-03T08:46:27.860Z",
+          "likesInfo": {
+            "likesCount": 0,
+            "dislikesCount": 0,
+            "myStatus": "None"
+          }
+        }
+      ]
+    }
+
+
+
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
 
     const items = await Promise.all(result.items.map(async comment => {

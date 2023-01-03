@@ -68,7 +68,7 @@ export class CommentLikesPgPawRepository {
 
 
   async likesByCommentID(commentId: string, userId: string): Promise<LikesInfoDto> {
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
+
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
