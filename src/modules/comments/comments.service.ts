@@ -218,7 +218,7 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
       return CommentsMapper.fromModelToView(comment, likes);
     }));
 
-    return {items }
+    //return {items }
 
     return { ...result, items };
   }
