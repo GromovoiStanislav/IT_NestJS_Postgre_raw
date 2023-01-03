@@ -70,10 +70,13 @@ export class CommentLikesPgPawRepository {
   async likesByCommentID(commentId: string, userId: string): Promise<LikesInfoDto> {
 
     const result = await this.dataSource.query(`
-       SELECT 
-      10 as "likesCount",
-      3 as "dislikesCount",
-      'Like' as "myStatus";
+    SELECT "commentId", "userId", "likeStatus"
+    FROM public."commentLikes"
+    WHERE "userId" in (
+        SELECT "id"
+        FROM public."users"
+        WHERE "isBanned" = false
+    );
     `);//, [commentId]
 
 

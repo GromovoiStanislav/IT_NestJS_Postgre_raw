@@ -1,5 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
 import { PostsController } from "./posts.controller";
 import {
   ClearAllPostsUseCase, CreatePostByBlogIdUseCase,
