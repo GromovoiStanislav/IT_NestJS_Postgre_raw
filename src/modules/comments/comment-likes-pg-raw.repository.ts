@@ -70,22 +70,22 @@ export class CommentLikesPgPawRepository {
   async likesByCommentID(commentId: string, userId: string): Promise<LikesInfoDto> {
 
     const result = await this.dataSource.query(`
-    WITH not_banned_likes AS ( 
-        SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
-        WHERE "userId" in (
-            SELECT "id"
-            FROM public."users"
-            WHERE "isBanned" = false
-        )
-    )
-    SELECT 
-    10 as "likesCount",
-    3 as "dislikesCount",
-    'Like' as "myStatus";
+       SELECT 
+      10 as "likesCount",
+      3 as "dislikesCount",
+      'Like' as "myStatus";
     `);//, [commentId]
 
-    //WHERE "commentId"=$1 and "userId" in (
 
+  //   WITH not_banned_likes AS (
+  //     SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
+    //WHERE "commentId"=$1 and "userId" in (
+  //     SELECT "id"
+  //   FROM public."users"
+  //   WHERE "isBanned" = false
+  // )
+  // )
+  //   SELECT
     // (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
     //   (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount";
     // //(SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
