@@ -93,8 +93,7 @@ export class PostLikesPgPawRepository {
         likesCount: +result[0].likesCount,
         dislikesCount: +result[0].dislikesCount,
         myStatus: result[0].myStatus ? result[0].myStatus : "None",
-        newestLikes:[]
-        //newestLikes: await this.newestLikes(postId)
+        newestLikes: await this.newestLikes(postId)
       };
     }
 
