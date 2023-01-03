@@ -5,7 +5,6 @@ import PostMapper from "./dto/postsMapper";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { InputBlogPostDto } from "./dto/input-blog-post.dto";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { PostLikesRepository } from "./postLikes.repository";
 import { GetIdBannedUsersCommand, GetUserByIdCommand } from "../users/users.service";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PostsPgPawRepository } from "./posts-pg-paw-repository";
@@ -131,9 +130,9 @@ export class GetOnePostWithLikesCommand {
 @CommandHandler(GetOnePostWithLikesCommand)
 export class GetOnePostWithLikesUseCase implements ICommandHandler<GetOnePostWithLikesCommand> {
   constructor(
-    private commandBus: CommandBus,
+    //private commandBus: CommandBus,
     protected postsRepository: PostsPgPawRepository,
-    protected postLikesRepository: PostLikesRepository
+    protected postLikesRepository: PostLikesPgPawRepository
   ) {
   }
 
@@ -145,9 +144,9 @@ export class GetOnePostWithLikesUseCase implements ICommandHandler<GetOnePostWit
     if (!post) {
       throw new NotFoundException();
     }
-    const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
 
-    const likes = await this.postLikesRepository.likesInfoByPostID(command.postId, command.userId, banUsersId);
+    const likes = await this.postLikesRepository.likesInfoByPostID(command.postId, command.userId);//banUsersId
     return PostMapper.fromModelToView(post, likes);
   }
 }
@@ -162,9 +161,9 @@ export class GetAllPostsCommand {
 @CommandHandler(GetAllPostsCommand)
 export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
   constructor(
-    private commandBus: CommandBus,
+    //private commandBus: CommandBus,
     protected postsRepository: PostsPgPawRepository,
-    protected postLikesRepository: PostLikesRepository
+    protected postLikesRepository: PostLikesPgPawRepository
   ) {
   }
 
@@ -173,9 +172,9 @@ export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
     const blogId = null;
     const result = await this.postsRepository.getAllPosts(command.paginationParams, blogId);
 
-    const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
     result.items = await Promise.all(result.items.map(async post => {
-      const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId, banUsersId);
+      const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId );//banUsersId
       return PostMapper.fromModelToView(post, likes);
     }));
 
@@ -193,9 +192,9 @@ export class GetAllPostsByBlogIdCommand {
 @CommandHandler(GetAllPostsByBlogIdCommand)
 export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsByBlogIdCommand> {
   constructor(
-    private commandBus: CommandBus,
+    //private commandBus: CommandBus,
     protected postsRepository: PostsPgPawRepository,
-    protected postLikesRepository: PostLikesRepository
+    protected postLikesRepository: PostLikesPgPawRepository
   ) {
   }
 
@@ -203,9 +202,9 @@ export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsBy
   async execute(command: GetAllPostsByBlogIdCommand) {
     const result = await this.postsRepository.getAllPosts(command.paginationParams, command.blogId);
     //return PostMapper.fromModelsToPaginator(result);
-    const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
     result.items = await Promise.all(result.items.map(async post => {
-      const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId, banUsersId);
+      const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId);//,banUsersId
       return PostMapper.fromModelToView(post, likes);
     }));
     return result;

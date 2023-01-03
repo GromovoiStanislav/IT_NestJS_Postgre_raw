@@ -10,8 +10,6 @@ import {
   UpdatePostUseCase
 } from "./posts.service";
 import { CqrsModule } from "@nestjs/cqrs";
-import { PostLike, PostLikeSchema } from "./schemas/post-likes.schema";
-import { PostLikesRepository } from "./postLikes.repository";
 import { UserIdMiddleware } from "../../middlewares/userId.middleware";
 import { JWT_Module } from "../jwt/jwt.module";
 import { BlogIdValidator } from "./dto/blogId.validator";
@@ -36,13 +34,9 @@ const useCases = [
 ];
 
 @Module({
-  imports: [CqrsModule,
-    MongooseModule.forFeature([
-      { name: PostLike.name, schema: PostLikeSchema }
-    ]),
-    JWT_Module],
+  imports: [CqrsModule, JWT_Module],
   controllers: [PostsController],
-  providers: [...useCases, PostsPgPawRepository, PostLikesPgPawRepository, PostLikesRepository, BlogIdValidator],
+  providers: [...useCases, PostsPgPawRepository, PostLikesPgPawRepository, BlogIdValidator],
   exports: []
 })
 

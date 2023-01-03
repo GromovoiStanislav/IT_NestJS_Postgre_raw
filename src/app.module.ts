@@ -3,7 +3,6 @@ import { configModule } from "./config/configModule";
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
-import { DatabaseMongoModule } from "./db/mongo.module";
 import { UsersModule } from "./modules/users/users.module";
 import { TestingModule } from "./modules/testing/testing.module";
 import { BlogsModule } from "./modules/blogs/blogs.module";
@@ -18,7 +17,7 @@ import { DatabasePostgresModule } from "./db/postgres.module";
 
 @Module({
   imports: [CqrsModule, configModule,
-    DatabasePostgresModule, DatabaseMongoModule,
+    DatabasePostgresModule,
     UsersModule, TestingModule, BlogsModule, PostsModule, AuthModule, CommentsModule, SecurityModule,
     ThrottlerModule.forRoot({
       ttl: 10,
