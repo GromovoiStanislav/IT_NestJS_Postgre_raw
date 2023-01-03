@@ -207,11 +207,11 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
       throw new NotFoundException();
     }
 
-    return { post }
+    //return { post }
 
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
 
-    return result
+    return { result }
 
     const items = await Promise.all(result.items.map(async comment => {
       const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
