@@ -23,7 +23,7 @@ export class PostLikesPgPawRepository {
   async deleteByPostIDUserID(postId: string, userId: string): Promise<void> {
     await this.dataSource.query(`
     DELETE FROM public."postLikes"
-    WHERE "postId" = $1 and "postId" = $2;
+    WHERE "postId" = $1 and "userId" = $2;
     `, [postId, userId]);
   }
 
