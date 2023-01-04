@@ -207,13 +207,8 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
 
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
 
-    // const items = await Promise.all(result.items.map(async comment => {
-    //   const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
-    //   return CommentsMapper.fromModelToView(comment, likes);
-    // }));
-
     const commentIds = result.items.map(comment => comment.id);
-    const likesArr = await this.commentLikesRepository.likesByCommentID2(commentIds, command.userId);
+    const likesArr = await this.commentLikesRepository.likesByCommentID(commentIds, command.userId);
 
     const items=[]
     for (const comment of result.items) {
@@ -249,10 +244,20 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
 
     const result = await this.commentsRepository.getAllCommentsByArrayOfPosts(command.paginationParams, command.postsId);
 
-    const items = await Promise.all(result.items.map(async comment => {
-      const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
-      return CommentsMapper.fromModelToOwnerView(comment, likes);
-    }));
+
+    const commentIds = result.items.map(comment => comment.id);
+    const likesArr = await this.commentLikesRepository.likesByCommentID(commentIds, command.userId);
+
+    const items=[]
+    for (const comment of result.items) {
+      let likes = likesArr.find(i=> i.commentId===comment.id)
+      if(!likes){
+        likes = { likesCount: 0, dislikesCount: 0, myStatus: "None" }
+      }else {
+        delete likes.commentId
+      }
+      items.push(CommentsMapper.fromModelToOwnerView(comment, likes));
+    }
 
     return { ...result, items };
   }
