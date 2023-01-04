@@ -142,8 +142,12 @@ export class CommentLikesPgPawRepository {
       const result = await this.dataSource.query(`
     SELECT "commentId", "userId", "likeStatus"
     FROM public."commentLikes"
-    WHERE "commentId" = ANY ($1) and "userId"=$2;
-    `, [commentIds, userId]);
+    WHERE "commentId" = ANY ($1) and "userId" in (
+         SELECT "id"
+         FROM public."users"
+         WHERE "isBanned" = false
+         );
+    `, [commentIds]);
 
 
       return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
