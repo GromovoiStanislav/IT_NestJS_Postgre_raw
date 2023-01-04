@@ -207,10 +207,15 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
 
     const result = await this.commentsRepository.getAllComments(command.paginationParams, command.postId);
 
-    const items = await Promise.all(result.items.map(async comment => {
+    // const items = await Promise.all(result.items.map(async comment => {
+    //   const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
+    //   return CommentsMapper.fromModelToView(comment, likes);
+    // }));
+
+    const items = result.items.map(async comment => {
       const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
       return CommentsMapper.fromModelToView(comment, likes);
-    }));
+    });
 
     return { ...result, items };
   }
