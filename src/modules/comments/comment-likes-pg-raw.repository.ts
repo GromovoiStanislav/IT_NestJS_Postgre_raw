@@ -128,7 +128,7 @@ export class CommentLikesPgPawRepository {
       //  SELECT
       //  (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
       //  (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount"
-      //  (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
+      //  (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 AND "userId"=$2 LIMIT 1) as "myStatus";
       //  `, [commentId, userId]);
       //
       //   if (result.length > 0) {
@@ -140,13 +140,16 @@ export class CommentLikesPgPawRepository {
       //   }
 
       const result = await this.dataSource.query(`
-    SELECT "commentId", "userId", "likeStatus"
+    WITH "not_banned_likes" AS (
+    SELECT "commentId", "likeStatus"
     FROM public."commentLikes"
-    WHERE "commentId" = ANY ($1) and "userId" in (
+    WHERE "commentId" = ANY ($1) AND "userId" in (
          SELECT "id"
          FROM public."users"
          WHERE "isBanned" = false
-         );
+         )
+    )
+    SELECT "commentId", "likeStatus" FROM "not_banned_likes";
     `, [commentIds]);
 
 
