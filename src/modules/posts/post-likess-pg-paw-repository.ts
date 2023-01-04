@@ -73,6 +73,8 @@ export class PostLikesPgPawRepository {
   }
 
   async likesInfoByPostID(postId: string, userId: string): Promise<ExtendedLikesInfoDto> {
+    return { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
+
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "postId", "userId", "likeStatus" FROM public."postLikes"
