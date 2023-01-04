@@ -69,40 +69,40 @@ export class CommentLikesPgPawRepository {
 
   async likesByCommentID(commentId: string, userId: string): Promise<LikesInfoDto> {
 
-    const result = await this.dataSource.query(`
-    SELECT "commentId", "userId", "likeStatus"
-    FROM public."commentLikes"
-    WHERE "userId" in (
-        SELECT "id"
-        FROM public."users"
-        WHERE "isBanned" = false
-    );
-    `);//, [commentId]
+    try {
+      const result = await this.dataSource.query(`
+    WITH not_banned_likes AS (
+    SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
+    WHERE "commentId"=$1 and "userId" in (
+       SELECT "id"
+       FROM public."users"
+       WHERE "isBanned" = false
+       )
+     )
+     SELECT
+     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
+     (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount";
+     (SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
+     `, [commentId, userId]);
+
+      if (result.length > 0) {
+        return {
+          likesCount: +result[0].likesCount,
+          dislikesCount: +result[0].dislikesCount,
+          myStatus: result[0].myStatus ? result[0].myStatus : "None"
+        };
+      }
+      return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
 
 
-  //   WITH not_banned_likes AS (
-  //     SELECT "commentId", "userId", "likeStatus" FROM public."commentLikes"
-    //WHERE "commentId"=$1 and "userId" in (
-  //     SELECT "id"
-  //   FROM public."users"
-  //   WHERE "isBanned" = false
-  // )
-  // )
-  //   SELECT
-    // (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
-    //   (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount";
-    // //(SELECT "likeStatus" FROM public."commentLikes" WHERE "commentId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
 
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
-
-    if (result.length > 0) {
-      return {
-        likesCount: +result[0].likesCount,
-        dislikesCount: +result[0].dislikesCount,
-        myStatus: result[0].myStatus ? result[0].myStatus : "None"
-      };
+    } catch (e) {
+      return { likesCount: 1, dislikesCount: 1, myStatus: "None" };
     }
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None" };
+
+
+
+
   }
 
 
