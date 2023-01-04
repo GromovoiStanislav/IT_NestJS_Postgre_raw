@@ -212,10 +212,12 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
     //   return CommentsMapper.fromModelToView(comment, likes);
     // }));
 
-    const items = result.items.map(async comment => {
+
+    const items=[]
+    for await (const comment of result.items) {
       const likes = await this.commentLikesRepository.likesByCommentID(comment.id, command.userId);
-      return CommentsMapper.fromModelToView(comment, likes);
-    });
+      items.push(CommentsMapper.fromModelToView(comment, likes));
+    }
 
     return { ...result, items };
   }
