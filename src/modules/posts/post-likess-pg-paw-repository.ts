@@ -121,7 +121,7 @@ export class PostLikesPgPawRepository {
 
     const result = await this.dataSource.query(`
     SELECT 
-    t."postId",t."userId",t."userLogin",t."addedAt" 
+    t."postId",t."userId",t."userLogin",t."addedAt", t."RN"
     FROM ( 
         SELECT "postId", "userId","userLogin","addedAt",
         ROW_NUMBER() OVER(PARTITION BY "postId" ORDER BY "addedAt" DESC) as "RN" 
@@ -141,7 +141,8 @@ export class PostLikesPgPawRepository {
       //postId: el.postId,
       addedAt: el.addedAt,
       userId: el.userId,
-      login: el.userLogin
+      login: el.userLogin,
+      RN: el.RN
     }));
   }
 
