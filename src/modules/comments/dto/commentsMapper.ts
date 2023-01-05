@@ -28,6 +28,9 @@ export default class CommentsMapper {
 
 
   static fromModelToView(comment: CommentDbDto, likes: LikesInfoDto): ViewCommentDto {
+
+    delete likes.commentId
+
     const viewComment = new ViewCommentDto();
     viewComment.id = comment.id;
     viewComment.content = comment.content;
