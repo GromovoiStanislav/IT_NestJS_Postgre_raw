@@ -133,7 +133,7 @@ export class PostLikesPgPawRepository {
         )
         ORDER BY "addedAt" DESC
     ) as t
-    WHERE t."RN"<3;
+    WHERE t."RN"<4;
     `, [postId]);
 
 
