@@ -104,7 +104,7 @@ export class PostLikesPgPawRepository {
   }
 
   async likesInfoByPostIDs(postIds: string[], userId: string): Promise<ExtendedLikesInfoDto[]> {
-    try {
+    //try {
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "postId", "userId", "likeStatus" FROM public."postLikes"
@@ -131,9 +131,9 @@ export class PostLikesPgPawRepository {
         }
       ));
 
-    } catch (e) {
-      return [];
-    }
+    // } catch (e) {
+    //   return [];
+    // }
   }
 
 
