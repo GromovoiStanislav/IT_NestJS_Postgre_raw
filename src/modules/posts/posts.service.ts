@@ -1,7 +1,6 @@
 import { InputPostDto } from "./dto/input-post.dto";
 import { ViewPostDto } from "./dto/view-post.dto";
 import PostMapper from "./dto/postsMapper";
-//import { GetIdBannedBlogsCommand, GetOneBlogCommand } from "../blogs/blogs.service";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { InputBlogPostDto } from "./dto/input-blog-post.dto";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
@@ -143,10 +142,6 @@ export class GetOnePostWithLikesUseCase implements ICommandHandler<GetOnePostWit
       throw new NotFoundException();
     }
 
-    // const likes = await this.postLikesRepository.likesInfoByPostID(command.postId, command.userId);
-    // return PostMapper.fromModelToView(post, likes);
-
-
     const likesArr = await this.postLikesRepository.likesInfoByPostIDs([command.postId], command.userId);
 
     let likes = likesArr.find(i => i.postId === command.postId);
@@ -188,9 +183,6 @@ export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
       if(!likes){
         likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
       }
-      // else {
-      //   delete likes.postId
-      // }
       items.push(PostMapper.fromModelToView(post, likes))
     }
 
@@ -226,9 +218,6 @@ export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsBy
       if(!likes){
         likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
       }
-      // else {
-      //   delete likes.postId
-      // }
       items.push(PostMapper.fromModelToView(post, likes))
     }
 
@@ -293,7 +282,6 @@ export class PostsUpdateLikeByIDUseCase implements ICommandHandler<PostsUpdateLi
       } else {
         await this.postLikesRepository.createCommentLike(command.postId, command.userId, user.login, command.likeStatus);
       }
-      //await this.postLikesRepository.updateLikeByID(command.postId, command.userId, user.login, command.likeStatus);
     }
   }
 }

@@ -74,36 +74,6 @@ export class PostLikesPgPawRepository {
   }
 
 
-  async likesInfoByPostID(postId: string, userId: string): Promise<ExtendedLikesInfoDto> {
-
-    const result = await this.dataSource.query(`
-    WITH not_banned_likes AS ( 
-        SELECT "postId", "userId", "likeStatus" FROM public."postLikes"
-        WHERE "postId"=$1 and "userId" in (
-        SELECT "id"
-        FROM public."users"
-        WHERE "isBanned" = false
-        )
-    )
-    SELECT 
-    (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Like') as "likesCount",
-    (SELECT count(*) FROM not_banned_likes WHERE "likeStatus"='Dislike') as "dislikesCount",
-    (SELECT "likeStatus" FROM public."postLikes" WHERE "postId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
-    `, [postId, userId]);
-
-    if (result.length > 0) {
-      const newestLikes = await this.newestLikes([postId]);
-
-      return {
-        likesCount: +result[0].likesCount,
-        dislikesCount: +result[0].dislikesCount,
-        myStatus: result[0].myStatus ? result[0].myStatus : "None",
-        newestLikes
-      };
-    }
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes: [] };
-  }
-
   async likesInfoByPostIDs(postIds: string[], userId: string): Promise<ExtendedLikesInfoDto[]> {
     try {
     const result = await this.dataSource.query(`
