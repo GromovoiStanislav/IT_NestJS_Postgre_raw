@@ -172,13 +172,26 @@ export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
     const blogId = null;
     const result = await this.postsRepository.getAllPosts(command.paginationParams, blogId);
 
-    //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-    result.items = await Promise.all(result.items.map(async post => {
-      const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId );//banUsersId
-      return PostMapper.fromModelToView(post, likes);
-    }));
+    const postIds = result.items.map(post => post.id);
+    const likesArr = await this.postLikesRepository.likesInfoByPostIDs(postIds, command.userId);
 
-    return result;
+    const items=[]
+    for (const post of result.items) {
+      let likes = likesArr.find(i=> i.postId===post.id)
+      if(!likes){
+        likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
+      }else {
+        delete likes.postId
+      }
+      items.push(PostMapper.fromModelToView(post, likes))
+    }
+
+    //   const items = await Promise.all(result.items.map(async post => {
+    //   const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId);
+    //   return PostMapper.fromModelToView(post, likes);
+    // }));
+
+    return { ...result, items };
   }
 }
 
@@ -201,13 +214,29 @@ export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsBy
   //: Promise<PaginatorDto<ViewPostDto[]>>
   async execute(command: GetAllPostsByBlogIdCommand) {
     const result = await this.postsRepository.getAllPosts(command.paginationParams, command.blogId);
-    //return PostMapper.fromModelsToPaginator(result);
-    //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-    result.items = await Promise.all(result.items.map(async post => {
-      const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId);//,banUsersId
-      return PostMapper.fromModelToView(post, likes);
-    }));
-    return result;
+    // //return PostMapper.fromModelsToPaginator(result);
+    // //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
+    // result.items = await Promise.all(result.items.map(async post => {
+    //   const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId);//,banUsersId
+    //   return PostMapper.fromModelToView(post, likes);
+    // }));
+    // return result;
+
+    const postIds = result.items.map(post => post.id);
+    const likesArr = await this.postLikesRepository.likesInfoByPostIDs(postIds, command.userId);
+
+    const items=[]
+    for (const post of result.items) {
+      let likes = likesArr.find(i=> i.postId===post.id)
+      if(!likes){
+        likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
+      }else {
+        delete likes.postId
+      }
+      items.push(PostMapper.fromModelToView(post, likes))
+    }
+
+    return { ...result, items };
   }
 }
 
@@ -393,6 +422,6 @@ export class GetAlAllLikesByPostIDUseCase implements ICommandHandler<GetAlAllLik
 
 
   async execute(command: GetAlAllLikesByPostIDCommand) {
-    return await this.postLikesRepository.newestLikes(command.postId);
+    return await this.postLikesRepository.newestLikes([command.postId]);
   }
 }
