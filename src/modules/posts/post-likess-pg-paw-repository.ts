@@ -129,6 +129,7 @@ export class PostLikesPgPawRepository {
             FROM public."users"
             WHERE "isBanned" = false
         )
+        ORDER BY "addedAt" DESC
     )
     SELECT 
     "postId","userId","userLogin","addedAt" 
