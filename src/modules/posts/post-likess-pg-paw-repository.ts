@@ -126,9 +126,12 @@ export class PostLikesPgPawRepository {
         SELECT "postId", "userId","userLogin","addedAt",
         ROW_NUMBER() OVER(PARTITION BY "postId" ORDER BY "addedAt" DESC) as "RN" 
         FROM public."postLikes"
-        WHERE "postId" = $1 and "likeStatus"='Like'
-        
-    ) as t
+        WHERE "postId"=$1 and "likeStatus"='Like' and "userId" in (
+            SELECT "id"
+            FROM public."users"
+            WHERE "isBanned" = false
+            )
+        ) as t
     WHERE t."RN"<4
     ;
     `, [postId]);
