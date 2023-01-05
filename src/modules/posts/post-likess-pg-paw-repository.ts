@@ -11,7 +11,8 @@ export class PostLikesPgPawRepository {
 
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource
-  ) {}
+  ) {
+  }
 
   async clearAll(): Promise<void> {
     await this.dataSource.query(`
@@ -91,7 +92,7 @@ export class PostLikesPgPawRepository {
     `, [postId, userId]);
 
     if (result.length > 0) {
-      const newestLikes =  await this.newestLikes([postId])
+      const newestLikes = await this.newestLikes([postId]);
 
       return {
         likesCount: +result[0].likesCount,
@@ -100,7 +101,7 @@ export class PostLikesPgPawRepository {
         newestLikes
       };
     }
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] };
+    return { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes: [] };
   }
 
   async likesInfoByPostIDs(postIds: string[], userId: string): Promise<ExtendedLikesInfoDto[]> {
@@ -108,7 +109,7 @@ export class PostLikesPgPawRepository {
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "postId", "userId", "likeStatus" FROM public."postLikes"
-        WHERE "postId"=$1 and "userId" in (
+        WHERE "postId"= ANY ($1) and "userId" in (
         SELECT "id"
         FROM public."users"
         WHERE "isBanned" = false
@@ -120,16 +121,16 @@ export class PostLikesPgPawRepository {
     (SELECT "likeStatus" FROM public."postLikes" WHERE "postId"=$1 and "userId"=$2 LIMIT 1) as "myStatus";
     `, [postIds, userId]);
 
-      const newestLikes = await this.newestLikes(postIds)
+    const newestLikes = await this.newestLikes(postIds);
 
-      return result.map(i => ({
-          postId: i.postId,
-          likesCount: +i.likesCount,
-          dislikesCount: +i.dislikesCount,
-          myStatus: i.myStatus ? i.myStatus : "None",
-          newestLikes: newestLikes.filter(el=>el.postId===i.postId)
-        }
-      ));
+    return result.map(i => ({
+        postId: i.postId,
+        likesCount: +i.likesCount,
+        dislikesCount: +i.dislikesCount,
+        myStatus: i.myStatus ? i.myStatus : "None",
+        newestLikes: newestLikes.filter(el => el.postId === i.postId)
+      }
+    ));
 
     // } catch (e) {
     //   return [];
@@ -177,7 +178,7 @@ export class PostLikesPgPawRepository {
       postId: el.postId,
       addedAt: el.addedAt,
       userId: el.userId,
-      login: el.userLogin,
+      login: el.userLogin
     }));
   }
 
