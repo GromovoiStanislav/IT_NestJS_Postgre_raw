@@ -52,6 +52,9 @@ export default class CommentsMapper {
 
 
   static fromModelToOwnerView(comment: CommentDbDto, likes: LikesInfoDto) {
+
+    delete likes.commentId
+
     return {
       id: comment.id,
       content: comment.content,
