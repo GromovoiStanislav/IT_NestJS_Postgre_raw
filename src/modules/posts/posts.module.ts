@@ -1,11 +1,20 @@
 import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { PostsController } from "./posts.controller";
 import {
-  ClearAllPostsUseCase, CreatePostByBlogIdUseCase,
-  CreatePostUseCase, DeletePostByBlogIdAndPostIdUseCase,
-  DeletePostUseCase, GetAllPostsByArrayOfBlogIdUseCase, GetAllPostsByBlogIdUseCase, GetAllPostsByBlogOwnerIdUseCase,
+  ClearAllPostsUseCase,
+  CreatePostByBlogIdUseCase,
+  CreatePostUseCase,
+  DeletePostByBlogIdAndPostIdUseCase,
+  DeletePostUseCase,
+  GetAlAllLikesByPostIDUseCase,
+  GetAllPostsByArrayOfBlogIdUseCase,
+  GetAllPostsByBlogIdUseCase,
+  GetAllPostsByBlogOwnerIdUseCase,
   GetAllPostsUseCase,
-  GetOnePostUseCase, GetOnePostWithLikesUseCase, PostsUpdateLikeByIDUseCase, UpdatePostByBlogIdAndPostIdUseCase,
+  GetOnePostUseCase,
+  GetOnePostWithLikesUseCase,
+  PostsUpdateLikeByIDUseCase,
+  UpdatePostByBlogIdAndPostIdUseCase,
   UpdatePostUseCase
 } from "./posts.service";
 import { CqrsModule } from "@nestjs/cqrs";
@@ -29,7 +38,9 @@ const useCases = [
   PostsUpdateLikeByIDUseCase,
   DeletePostByBlogIdAndPostIdUseCase,
   UpdatePostByBlogIdAndPostIdUseCase,
-  GetAllPostsByArrayOfBlogIdUseCase,GetAllPostsByBlogOwnerIdUseCase
+  GetAllPostsByArrayOfBlogIdUseCase,
+  GetAllPostsByBlogOwnerIdUseCase,
+  GetAlAllLikesByPostIDUseCase
 ];
 
 @Module({

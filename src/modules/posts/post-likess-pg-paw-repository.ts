@@ -126,16 +126,13 @@ export class PostLikesPgPawRepository {
         SELECT "postId", "userId","userLogin","addedAt",
         ROW_NUMBER() OVER(PARTITION BY "postId" ORDER BY "addedAt" DESC) as "RN" 
         FROM public."postLikes"
-        WHERE "postId" = $1 and "likeStatus"='Like' and "userId" in (
-            SELECT "id"
-            FROM public."users"
-            WHERE "isBanned" = false
-        )
-        ORDER BY "addedAt" DESC
+        WHERE "postId" = $1 and "likeStatus"='Like'
+        
     ) as t
+    WHERE t."RN"<4
     ;
     `, [postId]);
-//WHERE t."RN"<4
+//ORDER BY "addedAt" DESC
 
     return result.map(el => ({
       //postId: el.postId,

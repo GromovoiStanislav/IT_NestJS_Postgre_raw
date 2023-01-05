@@ -5,7 +5,7 @@ import PostMapper from "./dto/postsMapper";
 import { PaginationParams } from "../../commonDto/paginationParams.dto";
 import { InputBlogPostDto } from "./dto/input-blog-post.dto";
 import { CommandBus, CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { GetIdBannedUsersCommand, GetUserByIdCommand } from "../users/users.service";
+import { GetUserByIdCommand } from "../users/users.service";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { PostsPgPawRepository } from "./posts-pg-paw-repository";
 import { PostDbDto } from "./dto/posts-db.dto";
@@ -372,5 +372,27 @@ export class GetAllPostsByBlogOwnerIdUseCase implements ICommandHandler<GetAllPo
 
   async execute(command: GetAllPostsByBlogOwnerIdCommand): Promise<PostDbDto[]> {
     return await this.postsRepository.getAllPostsByBlogOwnerId(command.ownerId);
+  }
+}
+
+
+
+
+//////////////////////////////////////////////////////////////
+export class GetAlAllLikesByPostIDCommand {
+  constructor(public postId: string) {
+  }
+}
+
+@CommandHandler(GetAlAllLikesByPostIDCommand)
+export class GetAlAllLikesByPostIDUseCase implements ICommandHandler<GetAlAllLikesByPostIDCommand> {
+  constructor(
+    protected postLikesRepository: PostLikesPgPawRepository
+  ) {
+  }
+
+
+  async execute(command: GetAlAllLikesByPostIDCommand) {
+    return await this.postLikesRepository.newestLikes(command.postId);
   }
 }
