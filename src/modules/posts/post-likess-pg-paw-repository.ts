@@ -133,16 +133,15 @@ export class PostLikesPgPawRepository {
         )
         ORDER BY "addedAt" DESC
     ) as t
-    WHERE t."RN"<4;
+    ;
     `, [postId]);
-
+//WHERE t."RN"<4
 
     return result.map(el => ({
       //postId: el.postId,
       addedAt: el.addedAt,
       userId: el.userId,
       login: el.userLogin,
-      RN: el.RN
     }));
   }
 
