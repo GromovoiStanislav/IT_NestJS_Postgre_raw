@@ -120,7 +120,9 @@ export class PostLikesPgPawRepository {
 
 
     const result = await this.dataSource.query(`
-    WITH not_banned_likes AS ( 
+    SELECT 
+    "postId","userId","userLogin","addedAt" 
+    FROM ( 
         SELECT "postId", "userId","userLogin","addedAt",
         ROW_NUMBER() OVER(PARTITION BY "postId" ORDER BY "addedAt" DESC) as "RN" 
         FROM public."postLikes"
@@ -130,10 +132,7 @@ export class PostLikesPgPawRepository {
             WHERE "isBanned" = false
         )
         ORDER BY "addedAt" DESC
-    )
-    SELECT 
-    "postId","userId","userLogin","addedAt" 
-    FROM not_banned_likes 
+    ) 
     WHERE "RN"<3
     ;
     `, [postId]);
