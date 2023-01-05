@@ -47,7 +47,7 @@ export default class PostMapper {
 
 
   static fromModelToView(post: PostDbDto, likes: ExtendedLikesInfoDto): ViewPostDto {
-
+    delete likes.postId
     likes.newestLikes = likes.newestLikes.map(el=>{
       delete el.postId
       return el

@@ -130,7 +130,6 @@ export class GetOnePostWithLikesCommand {
 @CommandHandler(GetOnePostWithLikesCommand)
 export class GetOnePostWithLikesUseCase implements ICommandHandler<GetOnePostWithLikesCommand> {
   constructor(
-    //private commandBus: CommandBus,
     protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesPgPawRepository
   ) {
@@ -138,16 +137,25 @@ export class GetOnePostWithLikesUseCase implements ICommandHandler<GetOnePostWit
 
 //: Promise<ViewPostDto>
   async execute(command: GetOnePostWithLikesCommand) {
-    //const banBlogsId = await this.commandBus.execute(new GetIdBannedBlogsCommand());
 
     const post = await this.postsRepository.getOnePost(command.postId, true);
     if (!post) {
       throw new NotFoundException();
     }
-    //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
 
-    const likes = await this.postLikesRepository.likesInfoByPostID(command.postId, command.userId);//banUsersId
-    return PostMapper.fromModelToView(post, likes);
+    // const likes = await this.postLikesRepository.likesInfoByPostID(command.postId, command.userId);
+    // return PostMapper.fromModelToView(post, likes);
+
+
+    const likesArr = await this.postLikesRepository.likesInfoByPostIDs([command.postId], command.userId);
+
+    let likes = likesArr.find(i => i.postId === command.postId);
+    if (!likes) {
+      likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes: [] };
+    }
+
+    return PostMapper.fromModelToView(post, likes)
+
   }
 }
 
@@ -161,7 +169,6 @@ export class GetAllPostsCommand {
 @CommandHandler(GetAllPostsCommand)
 export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
   constructor(
-    //private commandBus: CommandBus,
     protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesPgPawRepository
   ) {
@@ -180,16 +187,12 @@ export class GetAllPostsUseCase implements ICommandHandler<GetAllPostsCommand> {
       let likes = likesArr.find(i=> i.postId===post.id)
       if(!likes){
         likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
-      }else {
-        delete likes.postId
       }
+      // else {
+      //   delete likes.postId
+      // }
       items.push(PostMapper.fromModelToView(post, likes))
     }
-
-    //   const items = await Promise.all(result.items.map(async post => {
-    //   const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId);
-    //   return PostMapper.fromModelToView(post, likes);
-    // }));
 
     return { ...result, items };
   }
@@ -205,7 +208,6 @@ export class GetAllPostsByBlogIdCommand {
 @CommandHandler(GetAllPostsByBlogIdCommand)
 export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsByBlogIdCommand> {
   constructor(
-    //private commandBus: CommandBus,
     protected postsRepository: PostsPgPawRepository,
     protected postLikesRepository: PostLikesPgPawRepository
   ) {
@@ -214,13 +216,6 @@ export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsBy
   //: Promise<PaginatorDto<ViewPostDto[]>>
   async execute(command: GetAllPostsByBlogIdCommand) {
     const result = await this.postsRepository.getAllPosts(command.paginationParams, command.blogId);
-    // //return PostMapper.fromModelsToPaginator(result);
-    // //const banUsersId = await this.commandBus.execute(new GetIdBannedUsersCommand());
-    // result.items = await Promise.all(result.items.map(async post => {
-    //   const likes = await this.postLikesRepository.likesInfoByPostID(post.id, command.userId);//,banUsersId
-    //   return PostMapper.fromModelToView(post, likes);
-    // }));
-    // return result;
 
     const postIds = result.items.map(post => post.id);
     const likesArr = await this.postLikesRepository.likesInfoByPostIDs(postIds, command.userId);
@@ -230,9 +225,10 @@ export class GetAllPostsByBlogIdUseCase implements ICommandHandler<GetAllPostsBy
       let likes = likesArr.find(i=> i.postId===post.id)
       if(!likes){
         likes = { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
-      }else {
-        delete likes.postId
       }
+      // else {
+      //   delete likes.postId
+      // }
       items.push(PostMapper.fromModelToView(post, likes))
     }
 
@@ -405,23 +401,3 @@ export class GetAllPostsByBlogOwnerIdUseCase implements ICommandHandler<GetAllPo
 }
 
 
-
-
-//////////////////////////////////////////////////////////////
-export class GetAlAllLikesByPostIDCommand {
-  constructor(public postId: string) {
-  }
-}
-
-@CommandHandler(GetAlAllLikesByPostIDCommand)
-export class GetAlAllLikesByPostIDUseCase implements ICommandHandler<GetAlAllLikesByPostIDCommand> {
-  constructor(
-    protected postLikesRepository: PostLikesPgPawRepository
-  ) {
-  }
-
-
-  async execute(command: GetAlAllLikesByPostIDCommand) {
-    return await this.postLikesRepository.newestLikes([command.postId]);
-  }
-}

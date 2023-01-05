@@ -9,7 +9,7 @@ import {
 import { CommandBus } from "@nestjs/cqrs";
 import {
   CreatePostCommand,
-  DeletePostCommand, GetAlAllLikesByPostIDCommand,
+  DeletePostCommand,
   GetAllPostsCommand,
   GetOnePostCommand, GetOnePostWithLikesCommand, PostsUpdateLikeByIDCommand,
   UpdatePostCommand
@@ -111,11 +111,6 @@ export class PostsController {
     @CurrentUserId() userId: string) {
 
     return this.commandBus.execute(new GetAllCommentsByPostIDCommand(paginationParams, postId, userId));
-  }
-
-  @Get(":postId/likes")
-  async getAllLikesByPostID(@Param("postId") postId: string) {
-    return this.commandBus.execute(new GetAlAllLikesByPostIDCommand(postId));
   }
 
 

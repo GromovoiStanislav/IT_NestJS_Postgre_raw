@@ -105,7 +105,7 @@ export class PostLikesPgPawRepository {
   }
 
   async likesInfoByPostIDs(postIds: string[], userId: string): Promise<ExtendedLikesInfoDto[]> {
-    //try {
+    try {
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
         SELECT "postId", "userId", "likeStatus" FROM public."postLikes"
@@ -134,30 +134,13 @@ export class PostLikesPgPawRepository {
       }
     ));
 
-    // } catch (e) {
-    //   return [];
-    // }
+    } catch (e) {
+      return [];
+    }
   }
 
 
   async newestLikes(postIds: string[]): Promise<LikeDetailsViewDto[]> {
-    // const result = await this.dataSource.query(`
-    // WITH not_banned_likes AS (
-    //     SELECT "userId","userLogin","addedAt" FROM public."postLikes"
-    //     WHERE "postId"=$1 and "likeStatus"='Like' and "userId" in (
-    //     SELECT "id"
-    //     FROM public."users"
-    //     WHERE "isBanned" = false
-    //     )
-    // )
-    // SELECT
-    // "userId","userLogin","addedAt"
-    // FROM not_banned_likes
-    // ORDER BY "addedAt" DESC
-    // LIMIT 3;
-    // `, [postId]);
-
-
     const result = await this.dataSource.query(`
     SELECT 
     t."postId",t."userId",t."userLogin",t."addedAt", t."RN"

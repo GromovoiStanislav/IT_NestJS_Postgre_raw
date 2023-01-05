@@ -215,9 +215,10 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
       let likes = likesArr.find(i=> i.commentId===comment.id)
       if(!likes){
         likes = { likesCount: 0, dislikesCount: 0, myStatus: "None" }
-      }else {
-        delete likes.commentId
       }
+      // else {
+      //   delete likes.commentId
+      // }
       items.push(CommentsMapper.fromModelToView(comment, likes));
     }
 
@@ -253,9 +254,10 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
       let likes = likesArr.find(i=> i.commentId===comment.id)
       if(!likes){
         likes = { likesCount: 0, dislikesCount: 0, myStatus: "None" }
-      }else {
-        delete likes.commentId
       }
+      // else {
+      //   delete likes.commentId
+      // }
       items.push(CommentsMapper.fromModelToOwnerView(comment, likes));
     }
 
