@@ -73,7 +73,6 @@ export class PostLikesPgPawRepository {
   }
 
   async likesInfoByPostID(postId: string, userId: string): Promise<ExtendedLikesInfoDto> {
-    return { likesCount: 0, dislikesCount: 0, myStatus: "None", newestLikes:[] }
 
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
@@ -103,24 +102,44 @@ export class PostLikesPgPawRepository {
 
 
   async newestLikes(postId: string): Promise<LikeDetailsViewDto[]> {
+    // const result = await this.dataSource.query(`
+    // WITH not_banned_likes AS (
+    //     SELECT "userId","userLogin","addedAt" FROM public."postLikes"
+    //     WHERE "postId"=$1 and "likeStatus"='Like' and "userId" in (
+    //     SELECT "id"
+    //     FROM public."users"
+    //     WHERE "isBanned" = false
+    //     )
+    // )
+    // SELECT
+    // "userId","userLogin","addedAt"
+    // FROM not_banned_likes
+    // ORDER BY "addedAt" DESC
+    // LIMIT 3;
+    // `, [postId]);
+
+
     const result = await this.dataSource.query(`
     WITH not_banned_likes AS ( 
-        SELECT "userId","userLogin","addedAt" FROM public."postLikes"
-        WHERE "postId"=$1 and "likeStatus"='Like' and "userId" in (
-        SELECT "id"
-        FROM public."users"
-        WHERE "isBanned" = false
+        SELECT "postId", "userId","userLogin","addedAt",
+        ROW_NUMBER() OVER(PARTITION BY "postId" ORDER BY "addedAt" DESC) as "RN" 
+        FROM public."postLikes"
+        WHERE "postId" = $1 and "likeStatus"='Like' and "userId" in (
+            SELECT "id"
+            FROM public."users"
+            WHERE "isBanned" = false
         )
     )
     SELECT 
-    "userId","userLogin","addedAt" 
-    FROM not_banned_likes
-    ORDER BY "addedAt" DESC
-    LIMIT 3;
+    "postId","userId","userLogin","addedAt" 
+    FROM not_banned_likes 
+    WHERE "RN"<3
+    ;
     `, [postId]);
 
 
     return result.map(el => ({
+      //postId: el.postId,
       addedAt: el.addedAt,
       userId: el.userId,
       login: el.userLogin
