@@ -112,7 +112,7 @@ export class PostsPgPawRepository {
     WHERE "blogId" in (
         SELECT "id"
         FROM public."blogs"
-        WHERE "ownerId" = $1
+        WHERE "userId" = $1
     );
     `, [ownerId]);
   }

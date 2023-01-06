@@ -367,37 +367,6 @@ export class GetAllCommentsForMyBlogsUseCase implements ICommandHandler<GetAllCo
     //const posts = await this.commandBus.execute(new GetAllPostsByArrayOfBlogIdCommand(blogsId));
     const posts = await this.commandBus.execute(new GetAllPostsByBlogOwnerIdCommand(command.ownerId));
 
-    return {
-      "pagesCount": 0,
-      "page": 0,
-      "pageSize": 0,
-      "totalCount": 0,
-      "items": [
-        {
-          "id": "string",
-          "content": "string",
-          "createdAt": "2023-01-06T05:47:55.141Z",
-          "likesInfo": {
-            "likesCount": 0,
-            "dislikesCount": 0,
-            "myStatus": "None"
-          },
-          "commentatorInfo": {
-            "userId": "string",
-            "userLogin": "string"
-          },
-          "postInfo": {
-            "id": "string",
-            "title": "string",
-            "blogId": "string",
-            "blogName": "string"
-          }
-        }
-      ]
-    }
-
-
-
     const postsId = posts.map(post => post.id);
     const comments = await this.commandBus.execute(new GetAllCommentsByArrayOfPostIDCommand(command.paginationParams, postsId, command.ownerId));
 
