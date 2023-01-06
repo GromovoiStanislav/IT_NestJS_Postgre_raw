@@ -241,7 +241,6 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
   async execute(command: GetAllCommentsByArrayOfPostIDCommand) {
 
     const result = await this.commentsRepository.getAllCommentsByArrayOfPosts(command.paginationParams, command.postsId);
-    return result
 
     const commentIds = result.items.map(comment => comment.id);
     const likesArr = await this.commentLikesRepository.likesByCommentID(commentIds, command.userId);
