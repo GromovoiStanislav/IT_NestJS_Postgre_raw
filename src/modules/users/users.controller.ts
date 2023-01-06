@@ -3,10 +3,10 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode, HttpException, HttpStatus,
+  HttpCode, HttpStatus,
   Param,
   Post, Put,
-  Query, UseGuards, UsePipes, ValidationPipe
+  Query, UseGuards,
 } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 
@@ -37,7 +37,9 @@ export class SaUsersController {
   async getUsers(@Query() query, @Pagination() paginationParams: PaginationParams) {
     const searchLogin = query.searchLoginTerm as string || "";
     const searchEmail = query.searchEmailTerm as string || "";
-    return this.commandBus.execute(new FindAllUsersCommand(searchLogin.trim(), searchEmail.trim(), paginationParams));
+    const banStatus = query.searchEmailTerm as string || "";
+
+    return this.commandBus.execute(new FindAllUsersCommand(banStatus.trim(), searchLogin.trim(), searchEmail.trim(), paginationParams));
   }
 
 

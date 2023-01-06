@@ -23,7 +23,7 @@ export class UsersPgPawRepository {
     `);
   }
 
-  async deleteUser(userId: string):Promise<number> {
+  async deleteUser(userId: string): Promise<number> {
     const result = await this.dataSource.query(`
     DELETE FROM public."users"
     WHERE "id" = $1;
@@ -32,12 +32,15 @@ export class UsersPgPawRepository {
   }
 
 
-  async getAllUsers(searchLogin: string, searchEmail: string, {
-    pageNumber,
-    pageSize,
-    sortBy,
-    sortDirection
-  }: PaginationParams): Promise<PaginatorDto<UserBdDto[]>> {
+  async getAllUsers(banStatus: string,
+                    searchLogin: string,
+                    searchEmail: string, {
+                      pageNumber,
+                      pageSize,
+                      sortBy,
+                      sortDirection
+                    }: PaginationParams): Promise<PaginatorDto<UserBdDto[]>> {
+
 
     if (!["login", "email", "createdAt"].includes(sortBy)) {
       sortBy = "createdAt";
@@ -52,6 +55,23 @@ export class UsersPgPawRepository {
     } else if (searchEmail) {
       filter = `WHERE "email" ~* '${searchEmail}'`;
     }
+
+    if (!["notBanned", "banned"].includes(banStatus)) {
+      if (filter !== "") {
+        if (banStatus === "banned") {
+          filter = filter + ` AND "isBanned" = true`;
+        } else if (banStatus === "notBanned") {
+          filter = filter + ` AND "isBanned" = false`;
+        }
+      } else {
+        if (banStatus === "banned") {
+          filter = `WHERE "isBanned" = true`;
+        } else if (banStatus === "notBanned") {
+          filter = `WHERE "isBanned" = false`;
+        }
+      }
+    }
+
 
     const items = await this.dataSource.query(`
     SELECT "login", "password", "email", "createdAt", "confirmationCode", "isEmailConfirmed", "recoveryCode", "isRecoveryCodeConfirmed", "isBanned", "banDate", "banReason", "id"
@@ -90,7 +110,7 @@ export class UsersPgPawRepository {
     if (result.length > 0) {
       return result[0];
     }
-    return null
+    return null;
   }
 
 
@@ -113,7 +133,7 @@ export class UsersPgPawRepository {
     if (result.length > 0) {
       return result[0];
     }
-    return null
+    return null;
   }
 
 
@@ -127,7 +147,7 @@ export class UsersPgPawRepository {
     if (result.length > 0) {
       return result[0];
     }
-    return null
+    return null;
   }
 
 
@@ -180,7 +200,6 @@ export class UsersPgPawRepository {
     WHERE "id" = $1;
     `, [userId, confirmationCode]);
   }
-
 
 
 }

@@ -29,7 +29,7 @@ export class ClearAllUsersUseCase implements ICommandHandler<ClearAllUsersComman
 
 ////////////////////////////////////////////////////
 export class FindAllUsersCommand {
-  constructor(public searchLogin: string, public searchEmail: string, public paginationParams: PaginationParams) {
+  constructor(public banStatus: string, public searchLogin: string, public searchEmail: string, public paginationParams: PaginationParams) {
   }
 }
 
@@ -39,7 +39,7 @@ export class FindAllUsersUseCase implements ICommandHandler<FindAllUsersCommand>
   }
 
   async execute(command: FindAllUsersCommand) {
-    const result = await this.usersRepository.getAllUsers(command.searchLogin, command.searchEmail, command.paginationParams);
+    const result = await this.usersRepository.getAllUsers(command.banStatus,command.searchLogin, command.searchEmail, command.paginationParams);
     return UsersMapper.fromModelsToPaginator(result);
   }
 }
