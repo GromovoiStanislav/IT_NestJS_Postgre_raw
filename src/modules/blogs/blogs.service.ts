@@ -363,6 +363,10 @@ export class GetAllCommentsForMyBlogsUseCase implements ICommandHandler<GetAllCo
 
   async execute(command: GetAllCommentsForMyBlogsCommand) {
 
+    //const blogsId = (await this.blogsRepository.getAllBlogsByOwnerId(command.ownerId)).map(blog => blog.id);
+    //const posts = await this.commandBus.execute(new GetAllPostsByArrayOfBlogIdCommand(blogsId));
+    const posts = await this.commandBus.execute(new GetAllPostsByBlogOwnerIdCommand(command.ownerId));
+
     return {
       "pagesCount": 0,
       "page": 0,
@@ -393,10 +397,6 @@ export class GetAllCommentsForMyBlogsUseCase implements ICommandHandler<GetAllCo
     }
 
 
-
-    //const blogsId = (await this.blogsRepository.getAllBlogsByOwnerId(command.ownerId)).map(blog => blog.id);
-    //const posts = await this.commandBus.execute(new GetAllPostsByArrayOfBlogIdCommand(blogsId));
-    const posts = await this.commandBus.execute(new GetAllPostsByBlogOwnerIdCommand(command.ownerId));
 
     const postsId = posts.map(post => post.id);
     const comments = await this.commandBus.execute(new GetAllCommentsByArrayOfPostIDCommand(command.paginationParams, postsId, command.ownerId));
