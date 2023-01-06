@@ -168,7 +168,7 @@ export class BlogsPgPawRepository {
     return await this.dataSource.query(`
     SELECT "id", "name", "websiteUrl", "description", "createdAt", "userId", "userLogin", "isBanned", "banDate"
     FROM public."blogs"
-    WHERE "ownerId" = $1;
+    WHERE "userId" = $1;
     `, [ownerId]);
   }
 
