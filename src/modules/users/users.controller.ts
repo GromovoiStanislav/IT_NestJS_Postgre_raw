@@ -37,7 +37,7 @@ export class SaUsersController {
   async getUsers(@Query() query, @Pagination() paginationParams: PaginationParams) {
     const searchLogin = query.searchLoginTerm as string || "";
     const searchEmail = query.searchEmailTerm as string || "";
-    const banStatus = query.searchEmailTerm as string || "";
+    const banStatus = query.banStatus as string || "";
 
     return this.commandBus.execute(new FindAllUsersCommand(banStatus.trim(), searchLogin.trim(), searchEmail.trim(), paginationParams));
   }

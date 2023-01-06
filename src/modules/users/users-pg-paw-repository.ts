@@ -56,7 +56,7 @@ export class UsersPgPawRepository {
       filter = `WHERE "email" ~* '${searchEmail}'`;
     }
 
-    if (!["notBanned", "banned"].includes(banStatus)) {
+    if (["notBanned", "banned"].includes(banStatus)) {
       if (filter !== "") {
         if (banStatus === "banned") {
           filter = filter + ` AND "isBanned" = true`;
