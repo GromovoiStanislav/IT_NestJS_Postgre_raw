@@ -157,7 +157,7 @@ export class CommentsPgPawRepository {
                                        pageSize,
                                        sortBy,
                                        sortDirection
-                                     }: PaginationParams, postsId: string[]): Promise<PaginatorDto<CommentDbDto[]>> {
+                                     }: PaginationParams, postsIds: string[]): Promise<PaginatorDto<CommentDbDto[]>> {
 
 
     if (!["content", "userLogin", "createdAt"].includes(sortBy)) {
@@ -169,18 +169,18 @@ export class CommentsPgPawRepository {
     const items = await this.dataSource.query(`
     SELECT "id", "postId", "content", "userId", "userLogin", "createdAt"
     FROM public."comments"
-    WHERE "postId" in ($1)
+    WHERE "postId" = ANY ($1)
     ORDER BY "${sortBy}" COLLATE "C" ${order}
     LIMIT ${pageSize} OFFSET ${(pageNumber - 1) * pageSize};
-    `, [postsId]);
+    `, [postsIds]);
 
 
     let totalCount = 0;
     const resultCount = await this.dataSource.query(`
     SELECT COUNT(*)
     FROM public."comments"
-    WHERE "postId" in ($1);
-   `, [postsId]);
+    WHERE "postId" = ANY ($1);
+   `, [postsIds]);
     if (resultCount.length > 0) {
       totalCount = +resultCount[0].count;
     }

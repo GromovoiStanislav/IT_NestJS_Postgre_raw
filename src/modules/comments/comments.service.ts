@@ -226,7 +226,7 @@ export class GetAllCommentsByPostIDUseCase implements ICommandHandler<GetAllComm
 
 /////////////////////////////////////////////
 export class GetAllCommentsByArrayOfPostIDCommand {
-  constructor(public paginationParams: PaginationParams, public postsId: string[], public userId: string) {
+  constructor(public paginationParams: PaginationParams, public postsIds: string[], public userId: string) {
   }
 }
 
@@ -240,7 +240,7 @@ export class GetAllCommentsByArrayOfPostIDUseCase implements ICommandHandler<Get
 
   async execute(command: GetAllCommentsByArrayOfPostIDCommand) {
 
-    const result = await this.commentsRepository.getAllCommentsByArrayOfPosts(command.paginationParams, command.postsId);
+    const result = await this.commentsRepository.getAllCommentsByArrayOfPosts(command.paginationParams, command.postsIds);
 
     const commentIds = result.items.map(comment => comment.id);
     const likesArr = await this.commentLikesRepository.likesByCommentID(commentIds, command.userId);

@@ -367,10 +367,8 @@ export class GetAllCommentsForMyBlogsUseCase implements ICommandHandler<GetAllCo
     //const posts = await this.commandBus.execute(new GetAllPostsByArrayOfBlogIdCommand(blogsId));
     const posts = await this.commandBus.execute(new GetAllPostsByBlogOwnerIdCommand(command.ownerId));
 
-    const postsId = posts.map(post => post.id);
-    const comments = await this.commandBus.execute(new GetAllCommentsByArrayOfPostIDCommand(command.paginationParams, postsId, command.ownerId));
-
-    return comments
+    const postsIds = posts.map(post => post.id);
+    const comments = await this.commandBus.execute(new GetAllCommentsByArrayOfPostIDCommand(command.paginationParams, postsIds, command.ownerId));
 
     const postInfo = (postId) => {
       const post = posts.find(post => post.id === postId);
