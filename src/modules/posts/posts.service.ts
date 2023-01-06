@@ -353,25 +353,6 @@ export class UpdatePostByBlogIdAndPostIdUseCase implements ICommandHandler<Updat
 
 
 //////////////////////////////////////////////////////////////
-export class GetAllPostsByArrayOfBlogIdCommand {
-  constructor(public blogsId: string[]) {
-  }
-}
-
-@CommandHandler(GetAllPostsByArrayOfBlogIdCommand)
-export class GetAllPostsByArrayOfBlogIdUseCase implements ICommandHandler<GetAllPostsByArrayOfBlogIdCommand> {
-  constructor(
-    protected postsRepository: PostsPgPawRepository) {
-  }
-
-  async execute(command: GetAllPostsByArrayOfBlogIdCommand): Promise<PostDbDto[]> {
-    return await this.postsRepository.getAllPostsByArrayOfBlogsId(command.blogsId);
-  }
-}
-
-
-
-//////////////////////////////////////////////////////////////
 export class GetAllPostsByBlogOwnerIdCommand {
   constructor(public ownerId: string) {
   }

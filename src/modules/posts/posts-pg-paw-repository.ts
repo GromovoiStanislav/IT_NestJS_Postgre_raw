@@ -95,16 +95,6 @@ export class PostsPgPawRepository {
   }
 
 
-  ////Доделать передачу массива в запрос или удалить
-  async getAllPostsByArrayOfBlogsId(blogsId: string[]): Promise<PostDbDto[]> {
-    return this.dataSource.query(`
-    SELECT "id", "title", "content", "shortDescription", "blogId", "blogName", "createdAt"
-    FROM public."posts"
-    WHERE "blogId" in ($1);
-    `, [blogsId]);
-  }
-
-
   async getAllPostsByBlogOwnerId(ownerId: string): Promise<PostDbDto[]> {
     return this.dataSource.query(`
     SELECT "id", "title", "content", "shortDescription", "blogId", "blogName", "createdAt"

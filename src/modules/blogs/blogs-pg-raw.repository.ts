@@ -164,14 +164,6 @@ export class BlogsPgPawRepository {
   }
 
 
-  async getAllBlogsByOwnerId(ownerId: string): Promise<BlogBdDto[]> {
-    return await this.dataSource.query(`
-    SELECT "id", "name", "websiteUrl", "description", "createdAt", "userId", "userLogin", "isBanned", "banDate"
-    FROM public."blogs"
-    WHERE "userId" = $1;
-    `, [ownerId]);
-  }
-
   //////////////////////////////////////////////////////
 
   async banUserForBlog(createBlogBanUserDto: CreateBlogBanUserDto): Promise<void> {

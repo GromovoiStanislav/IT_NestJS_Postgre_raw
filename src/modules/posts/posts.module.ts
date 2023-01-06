@@ -6,7 +6,6 @@ import {
   CreatePostUseCase,
   DeletePostByBlogIdAndPostIdUseCase,
   DeletePostUseCase,
-  GetAllPostsByArrayOfBlogIdUseCase,
   GetAllPostsByBlogIdUseCase,
   GetAllPostsByBlogOwnerIdUseCase,
   GetAllPostsUseCase,
@@ -37,7 +36,6 @@ const useCases = [
   PostsUpdateLikeByIDUseCase,
   DeletePostByBlogIdAndPostIdUseCase,
   UpdatePostByBlogIdAndPostIdUseCase,
-  GetAllPostsByArrayOfBlogIdUseCase,
   GetAllPostsByBlogOwnerIdUseCase,
 ];
 
